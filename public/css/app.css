@@ -1,0 +1,70 @@
+/*
+ * MINIMAL CSS RESET
+ */
+
+ html,
+ body,
+ ol,
+ ul,
+ li,
+ table,
+ thead,
+ tbody,
+ tfoot,
+ tr,
+ th,
+ td,
+ pre,
+ h1,
+ h2,
+ h3,
+ h4,
+ div,
+ span,
+ p {
+   margin: 0;
+   padding: 0;
+   border: 0;
+   font-size: 100%;
+   font: inherit;
+   vertical-align: baseline;
+ }
+
+ table {
+   border-collapse: collapse;
+   border-spacing: 0;
+ }
+
+ input,
+ textarea,
+ button {
+   background: none;
+   border: 0;
+ }
+
+ input:focus,
+ textarea:focus,
+ button:focus {
+   outline: none;
+ }
+
+ /*
+  * GLOBAL STYLES
+  */
+
+ /* html,
+ body {
+   background-color: #111;
+ } */
+
+ /*
+  * CSS3 ANIMATIONS
+  */
+ @keyframes fadein {
+   from {
+     opacity: 0;
+   }
+   to {
+     opacity: 1;
+   }
+ }

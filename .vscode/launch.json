@@ -1,0 +1,63 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "server.ts (restart on edit)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ts-node-dev",
+      "stopOnEntry": false,
+      "args": [
+        "-r",
+        "tsconfig-paths/register",
+        "server/src/server.ts"
+      ],
+      "cwd": "${workspaceRoot}",
+      "sourceMaps": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "name": "server.ts (no restart)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ts-node",
+      "stopOnEntry": false,
+      "args": [
+        "-r",
+        "tsconfig-paths/register",
+        "server/src/server.ts"
+      ],
+      "cwd": "${workspaceRoot}",
+      "sourceMaps": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "name": "loadtest.ts",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ts-node",
+      "stopOnEntry": false,
+      "args": [
+        "-r",
+        "tsconfig-paths/register",
+        "server/src/loadtest.ts"
+      ],
+      "cwd": "${workspaceRoot}",
+      "sourceMaps": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ],
+      "restart": true
+    }
+  ]
+}

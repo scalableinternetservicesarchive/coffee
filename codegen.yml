@@ -1,0 +1,16 @@
+schema: server/src/graphql/schema.graphql
+generates:
+  server/src/graphql/schema.types.ts:
+    hooks:
+      afterOneFileWrite:
+        - prettier --write
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      declarationKind: interface
+      mapperTypeSuffix: Model
+      # avoidOptionals: true
+      # mappers:
+      #   Survey: ../entities/Survey#Survey
+      #   SurveyQuestion: ../entities/SurveyQuestion#SurveyQuestion

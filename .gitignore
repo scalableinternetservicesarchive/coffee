@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# build artifacts
+coverage/
+bin/
+bundle.zip
+bundle.js*
+bundle-graphiql.js*
+
+# expo
+.expo
+.vscode/.react
+
+# terraform
+.terraform/
+.terraform*
+terraform.tfstate.backup
+
+# other
+.DS_Store
