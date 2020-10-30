@@ -20,6 +20,44 @@ type Query {
 
   surveys: [Survey!]!
   survey (surveyId: Int!): Survey
+
+  # Return a list of all cafe in database
+  list_cafe: [cafeshop!]
+
+  # Returns a list of likes
+  list_like: [like!]
+}
+
+type cafeshop{
+  #cafe shop name
+  cafeshop_name: String!
+
+  #Location to be added
+  longtitude: Float!
+  latitude: Float!
+
+  #List of users who like this cafe store
+  like_list: [User!]
+
+  #list of images URLS of this cafe stores
+  images: [String!]
+
+
+  #cafe store id
+  cafeshop_id: Int!
+
+  #Menu (to be added)
+}
+
+type menus{
+  #list of drinks
+  drinks:[String!]
+
+}
+
+type like{
+  #user who like it or not maybe a boolean type
+  action: Boolean!
 }
 
 type Mutation {
