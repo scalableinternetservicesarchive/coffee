@@ -33,8 +33,26 @@ type cafeshop{
   cafeshop_name: String!
 
   #Location to be added
+  longtitude: Float!
+  latitude: Float!
+
+  #List of users who like this cafe store
+  like_list: [User!]
+
+  #list of images URLS of this cafe stores
+  images: [String!]
+
+
+  #cafe store id
+  cafeshop_id: Int!
 
   #Menu (to be added)
+}
+
+type menus{
+  #list of drinks
+  drinks:[String!]
+
 }
 
 type like{
