@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { User as GraphqlUser, UserType } from '../graphql/schema.types'
 
+/*
 @Entity()
 export class User extends BaseEntity implements GraphqlUser {
   @PrimaryGeneratedColumn()
@@ -29,4 +30,20 @@ export class User extends BaseEntity implements GraphqlUser {
     nullable: true,
   })
   name: string
+}
+ */
+
+@Entity()
+export class User extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
+
+  @Column({ nullable: false })
+  hashedPassword: string
+
+  @Column({ nullable: false })
+  firstName: string
+
+  @Column({ nullable: false })
+  lastName: string
 }
