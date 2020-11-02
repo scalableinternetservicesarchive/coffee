@@ -29,6 +29,10 @@ type Query {
 }
 
 type cafeshop{
+
+   #cafe store id
+  cafeshop_id: String!
+
   #cafe shop name
   cafeshop_name: String!
 
@@ -36,28 +40,25 @@ type cafeshop{
   longtitude: Float!
   latitude: Float!
 
-  #List of users who like this cafe store
-  like_list: [User!]
-
   #list of images URLS of this cafe stores
   images: [String!]
 
-
-  #cafe store id
-  cafeshop_id: Int!
-
-  #Menu (to be added)
 }
 
 type menus{
+
+  #joinColumn figure out this later(cafeId)
+  cafe: cafeshop!
   #list of drinks
-  drinks:[String!]
+  items:[String!]
 
 }
 
 type like{
-  #user who like it or not maybe a boolean type
-  action: Boolean!
+  #joined column userID with cafe fig out later
+  cafe: cafeshop
+  user: [User!]
+
 }
 
 type Mutation {
@@ -73,10 +74,10 @@ type Subscription {
 }
 
 type User {
-  id: Int!
-  userType: UserType!
-  email: String!
-  name: String!
+  id: String!
+  hashedPassword: String!
+  firstName: String!
+  lastName: String!
 }
 
 enum UserType { ADMIN, USER }
