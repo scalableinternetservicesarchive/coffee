@@ -58,7 +58,7 @@ function ProjectRequirements() {
           <li>Must be deployable (and load-testable) web applications of non-trivial complexity</li>
           <li>Must be developed in teams of 4</li>
           <li>
-            Must use the class project framework located <Link href="https://github.com/rothfels/bespin">here</Link>
+            Must use the class project framework located <Link href="https://github.com/rothfels/coffee">here</Link>
           </li>
           <li>Must use TypeScript (or JavaScript)</li>
           <li>Must use at least 4 MySQL tables</li>
@@ -122,7 +122,7 @@ function SprintSchedule() {
             checklistFull={[
               {
                 name: 'follow Quickstart section until you have a running dev server',
-                href: 'https://github.com/rothfels/bespin#quickstart',
+                href: 'https://github.com/rothfels/coffee#quickstart',
               },
               {
                 name: 'learn TypeScript',
@@ -134,7 +134,7 @@ function SprintSchedule() {
               },
               {
                 name: 'write a React component in TypeScript / Storybook',
-                href: 'https://github.com/rothfels/bespin#run-react-storybook',
+                href: 'https://github.com/rothfels/coffee#run-react-storybook',
               },
             ]}
           />

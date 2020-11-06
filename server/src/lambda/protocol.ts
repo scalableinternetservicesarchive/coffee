@@ -8,7 +8,7 @@ export enum LambdaFunc {
  *
  * It is the same as the JSON data passed to the Lambda's main handler method by the AWS Lambda runtime.
  *
- * aws lambda invoke --region=us-west-2 --function-name=bespin --payload='{"function":"PING"}' output.txt
+ * aws lambda invoke --region=us-west-2 --function-name=coffee --payload='{"function":"PING"}' output.txt
  */
 export interface ServiceReq {
   function: LambdaFunc

@@ -6,9 +6,9 @@
 export type UserScript = () => Promise<any>
 
 export async function userScript() {
-  await fetch('https://bespin.cloudcity.computer/')
-  await fetch('https://bespin.cloudcity.computer/')
-  await fetch('https://bespin.cloudcity.computer/')
+  await fetch('https://coffee.cloudcity.computer/')
+  await fetch('https://coffee.cloudcity.computer/')
+  await fetch('https://coffee.cloudcity.computer/')
 }
 
 // set this is you require authenticated requests
@@ -18,7 +18,7 @@ export async function userScript() {
 //   return new ApolloClient({
 //     ssrMode: true,
 //     link: new HttpLink({
-//       uri: `https://bespin.cloudcity.computer/graphql`,
+//       uri: `https://coffee.cloudcity.computer/graphql`,
 //       credentials: 'same-origin',
 //       fetch: async (uri: any, options: any) => {
 //         const reqBody = JSON.parse(options!.body! as string)

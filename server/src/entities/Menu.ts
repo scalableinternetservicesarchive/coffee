@@ -1,5 +1,5 @@
-import { BaseEntity, Column, OneToOne, JoinColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { Cafe } from './Cafe';
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Cafe } from './Cafe'
 
 @Entity()
 export class Menu extends BaseEntity {

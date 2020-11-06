@@ -1,5 +1,5 @@
 variable "app_name" {
-  default = "bespin"
+  default = "coffee"
 }
 variable "subnet_group" {
   default = "mysql-subnet"

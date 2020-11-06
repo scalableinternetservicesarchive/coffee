@@ -46,7 +46,7 @@ export function HomePage(props: HomePageProps) {
             <BodyText>
               <ul className="pl4">
                 <li>
-                  Follow the <Link href="https://github.com/rothfels/bespin#quickstart">project Quickstart</Link> to
+                  Follow the <Link href="https://github.com/rothfels/coffee#quickstart">project Quickstart</Link> to
                   configure your dev environment.
                 </li>
                 <li>

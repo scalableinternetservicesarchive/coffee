@@ -53,8 +53,8 @@ resource "aws_cloudwatch_log_group" "lambda" {
 
 # Invoke lambdas from API Gateway.
 # Incoming requests must match a configured resource and method.
-# Lambda URIs are "{+lambda}/{+function}" e.g. "bespin/ping".
-# We also support path matching at the root e.g. "bespin" but these require definining separate "_root" terraform resources.
+# Lambda URIs are "{+lambda}/{+function}" e.g. "coffee/ping".
+# We also support path matching at the root e.g. "coffee" but these require definining separate "_root" terraform resources.
 resource "aws_api_gateway_rest_api" "lambda" {
   name        = var.app_name
   description = "API Gateway for invoking lambdas"

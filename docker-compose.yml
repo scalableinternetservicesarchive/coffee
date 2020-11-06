@@ -2,7 +2,7 @@ version: "3"
 
 services:
   # app:
-  #   image: "101624687637.dkr.ecr.us-west-2.amazonaws.com/bespin:local"
+  #   image: "101624687637.dkr.ecr.us-west-2.amazonaws.com/coffee:local"
   #   depends_on:
   #     - redis
   #     - db
@@ -20,7 +20,7 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_ROOT_HOST=%
       - MYSQL_PASSWORD=password
-      - MYSQL_DATABASE=bespin
+      - MYSQL_DATABASE=coffee
     ports:
       - "3307:3306"
     command: --default-authentication-plugin=mysql_native_password

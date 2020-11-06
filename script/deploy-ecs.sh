@@ -10,7 +10,7 @@
 
 set -e
 
-usage="Usage: deploy-ecs.sh [bespin-app-web|bespin-app-background] [sha]"
+usage="Usage: deploy-ecs.sh [coffee-app-web|coffee-app-background] [sha]"
 
 if [ -z "$1" ] || [ -z "$2" ]; then
   echo "$usage"
@@ -19,7 +19,7 @@ fi
 
 ecs_region="us-west-2"
 
-new_image="101624687637.dkr.ecr.us-west-2.amazonaws.com/bespin:$2"
+new_image="101624687637.dkr.ecr.us-west-2.amazonaws.com/coffee:$2"
 
 previous_task_def=$(aws ecs describe-task-definition --region $ecs_region --task-definition $1-task)
 container_defs=$(echo "$previous_task_def" | jq .taskDefinition.containerDefinitions)
@@ -49,7 +49,7 @@ new_task_def_arn=$(echo $new_task_def | jq -r .taskDefinition.taskDefinitionArn)
 echo "created new task definition: $new_task_def_arn"
 echo "deploying new task definition to $1-service..."
 
-aws ecs update-service --cluster bespin \
+aws ecs update-service --cluster coffee \
   --no-cli-pager \
   --region "$ecs_region" \
   --force-new-deployment \

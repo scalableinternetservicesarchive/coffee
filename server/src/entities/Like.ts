@@ -8,9 +8,9 @@ export class Like extends BaseEntity {
   id: string
 
   // NOTE: ManyToOne annotation allows us to omit @JoinColumn.
-  @ManyToOne(type => User, user => user.likes)
+  @ManyToOne(() => User, user => user.likes)
   user: User
 
-  @ManyToOne(type => Cafe, cafe => cafe.likes)
+  @ManyToOne(() => Cafe, cafe => cafe.likes)
   cafe: Cafe
 }

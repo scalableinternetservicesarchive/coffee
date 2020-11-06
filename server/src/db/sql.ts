@@ -1,15 +1,15 @@
 import { createPool, PoolConnection, QueryOptions } from 'mysql2'
 import { createConnection } from 'typeorm'
-import { User } from '../entities/User'
 import { Cafe } from '../entities/Cafe'
 import { Like } from '../entities/Like'
 import { Menu } from '../entities/Menu'
+import { User } from '../entities/User'
 
 const baseConfig = {
   host: process.env.MYSQL_HOST || '127.0.0.1',
   port: Number(process.env.MYSQL_PORT || 3307),
   password: process.env.MYSQL_PASSWORD || 'password',
-  database: process.env.MYSQL_DATABASE || 'bespin',
+  database: process.env.MYSQL_DATABASE || 'coffee',
 }
 
 export async function initORM() {
