@@ -15,8 +15,10 @@ export class Cafe extends BaseEntity {
   @Column({ nullable: false })
   latitude: number
 
-  @Column({ nullable: true })
-  images: string[]
+  // NOTE: arrays like this aren't supporte in mysql.
+  // We need to make a joining table images <> Cafe.
+  //@Column({ nullable: true })
+  //images: string[]
 
   likes: Like[]
 }
