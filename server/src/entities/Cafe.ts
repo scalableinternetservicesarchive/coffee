@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Like } from './Like'
 
 @Entity()
 export class Cafe extends BaseEntity {
@@ -9,12 +10,13 @@ export class Cafe extends BaseEntity {
   name: string
 
   @Column({ nullable: false })
-  longitude: float
+  longitude: number
 
   @Column({ nullable: false })
-  latitude: float
+  latitude: number
 
   @Column({ nullable: true })
   images: string[]
 
+  likes: Like[]
 }

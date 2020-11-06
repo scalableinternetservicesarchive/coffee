@@ -24,9 +24,9 @@ interface Context {
 
 export const graphqlRoot: Resolvers<Context> = {
   Query: {
-    self: (_, args, ctx) => ctx.user,
-    survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
-    surveys: () => Survey.find(),
+    // self: (_, args, ctx) => ctx.user,
+    // survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
+    // surveys: () => Survey.find(),
   },
   Mutation: {
     answerSurvey: async (_, { input }, ctx) => {

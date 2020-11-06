@@ -1,6 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { User as GraphqlUser, UserType } from '../graphql/schema.types'
-
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Like } from './Like'
 /*
 @Entity()
 export class User extends BaseEntity implements GraphqlUser {
@@ -46,4 +45,6 @@ export class User extends BaseEntity {
 
   @Column({ nullable: false })
   lastName: string
+
+  likes: Like[]
 }
