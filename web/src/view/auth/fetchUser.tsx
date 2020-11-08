@@ -4,8 +4,11 @@ export const fetchUser = gql`
   query FetchUserContext {
     self {
       id
-      name
-      userType
+      # name
+      # userType
+      firstName
+      lastName
+      hashedPassword
     }
   }
 `
