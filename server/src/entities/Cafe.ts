@@ -1,18 +1,18 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { Like } from './Like'
 
 @Entity()
-export class Cafe extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+export class Cafe {
+  @PrimaryGeneratedColumn()
+  id: number
 
   @Column({ nullable: false })
   name: string
 
-  @Column({ nullable: false })
+  @Column({ type: 'double', nullable: false })
   longitude: number
 
-  @Column({ nullable: false })
+  @Column({ type: 'double', nullable: false })
   latitude: number
 
   // NOTE: arrays like this aren't supporte in mysql.

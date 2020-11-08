@@ -4,8 +4,8 @@ import { User } from './User'
 
 @Entity()
 export class Like extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn()
+  id: number
 
   // NOTE: ManyToOne annotation allows us to omit @JoinColumn.
   @ManyToOne(() => User, user => user.likes)

@@ -3,8 +3,8 @@ import { Cafe } from './Cafe'
 
 @Entity()
 export class Menu extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn()
+  id: number
 
   @OneToOne(() => Cafe)
   @JoinColumn()

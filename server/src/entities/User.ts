@@ -34,8 +34,8 @@ export class User extends BaseEntity implements GraphqlUser {
 
 @Entity()
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn()
+  id: number
 
   @Column({ nullable: false })
   hashedPassword: string
