@@ -4,6 +4,7 @@ import { Cafe } from '../entities/Cafe'
 import { Like } from '../entities/Like'
 import { Menu } from '../entities/Menu'
 import { User } from '../entities/User'
+import { Session } from '../entities/Session'
 
 const baseConfig = {
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -12,6 +13,7 @@ const baseConfig = {
   database: process.env.MYSQL_DATABASE || 'coffee',
 }
 
+
 export async function initORM() {
   return await createConnection({
     ...baseConfig,
@@ -19,7 +21,7 @@ export async function initORM() {
     username: process.env.MYSQL_USER || 'root',
     synchronize: true,
     logging: false,
-    entities: [User, Cafe, Like, Menu],
+    entities: [User, Cafe, Like, Menu, Session],
     extra: {
       connectionLimit: 5,
     },

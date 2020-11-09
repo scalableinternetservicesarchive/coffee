@@ -1,12 +1,15 @@
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
+import * as argon2 from 'argon2';
+/*
 import { check } from '../../../common/src/util'
 import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
+*/
 import { User } from '../entities/User'
-import { Resolvers } from './schema.types'
+import { Resolvers, MutationSignUpArgs } from './schema.types'
 
 export const pubsub = new PubSub()
 
@@ -24,11 +27,22 @@ interface Context {
 
 export const graphqlRoot: Resolvers<Context> = {
   Query: {
-    // self: (_, args, ctx) => ctx.user,
+    self: (_, args, ctx) => ctx.user,
     // survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     // surveys: () => Survey.find(),
   },
   Mutation: {
+    signUp: async(_, {email, firstName, lastName, password}: MutationSignUpArgs, ctx: Context) => {
+      const newUser = new User();
+      newUser.hashedPassword = await argon2.hash(password);
+      newUser.email = email;
+      newUser.firstName = firstName;
+      newUser.lastName = lastName;
+      const resultUser = await newUser.save();
+      return resultUser;
+    },
+
+    /*
     answerSurvey: async (_, { input }, ctx) => {
       const { answer, questionId } = input
       const question = check(await SurveyQuestion.findOne({ where: { id: questionId }, relations: ['survey'] }))
@@ -51,11 +65,13 @@ export const graphqlRoot: Resolvers<Context> = {
       ctx.pubsub.publish('SURVEY_UPDATE_' + surveyId, survey)
       return survey
     },
-  },
+  }
   Subscription: {
     surveyUpdates: {
       subscribe: (_, { surveyId }, context) => context.pubsub.asyncIterator('SURVEY_UPDATE_' + surveyId),
       resolve: (payload: any) => payload,
     },
+
+  */
   },
 }

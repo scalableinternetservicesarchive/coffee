@@ -45,7 +45,7 @@ type cafeshop{
 
 }
 
-type menus{
+type menus {
 
   #joinColumn figure out this later(cafeId)
   cafe: cafeshop!
@@ -54,31 +54,39 @@ type menus{
 
 }
 
-type like{
+type like {
   #joined column userID with cafe fig out later
   cafe: cafeshop
   user: [User!]
 
 }
 
+type User {
+  # NOTE: We don't put the hashedPassword here (for obvious security reasons), although it 
+  # exists in the DB.
+
+  # user's ID.
+  id: Int!
+  firstName: String!
+  lastName: String!
+  email: String!
+}
+
 type Mutation {
   # Records an answer to a survey question presented in class.
-  answerSurvey (input: SurveyInput!): Boolean!
+  #answerSurvey (input: SurveyInput!): Boolean!
 
   # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
-  nextSurveyQuestion (surveyId: Int!): Survey
+  #nextSurveyQuestion (surveyId: Int!): Survey
+
+  # sign up for new user, returning the new User's details
+  signUp (email: String!, firstName: String!, lastName: String!, password: String!): User!
 }
 
 type Subscription {
   surveyUpdates (surveyId: Int!): Survey
 }
 
-type User {
-  id: String!
-  hashedPassword: String!
-  firstName: String!
-  lastName: String!
-}
 
 enum UserType { ADMIN, USER }
 

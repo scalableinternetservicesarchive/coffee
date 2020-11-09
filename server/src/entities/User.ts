@@ -46,5 +46,8 @@ export class User extends BaseEntity {
   @Column({ nullable: false })
   lastName: string
 
+  @Column({ nullable: false, unique: true })
+  email: string
+
   likes: Like[]
 }

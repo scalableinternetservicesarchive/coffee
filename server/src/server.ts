@@ -14,6 +14,7 @@ import { getOperationAST, parse as parseGraphql, specifiedRules, subscribe as gq
 import { GraphQLServer } from 'graphql-yoga'
 import { forAwaitEach, isAsyncIterable } from 'iterall'
 import path from 'path'
+import * as argon2 from 'argon2';
 import 'reflect-metadata'
 import { v4 as uuidv4 } from 'uuid'
 import { checkEqual, Unpromise } from '../../common/src/util'
@@ -58,8 +59,10 @@ server.express.post(
     const email = req.body.email
     const password = req.body.password
 
-    const user = await User.findOne({ where: { email } })
-    if (!user || password !== Config.adminPassword) {
+    const user = await User.findOne({ where: { email } });
+
+    // can only log in if user available and (entered correct password OR admin password).
+    if (!user || (password !== Config.adminPassword && !(await argon2.verify(user.hashedPassword, password)))) {
       res.status(403).send('Forbidden')
       return
     }
