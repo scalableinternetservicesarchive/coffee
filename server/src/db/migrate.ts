@@ -146,23 +146,21 @@ async function checkFailedMigrations(sql: SQL) {
  */
 function checkSuccessfulMigrations(successes: Migration[], migrations: MigrationInput[]) {
   let lastRank = 0
-  if (migrations) {
-    for (let i = 0; i < successes.length; i++) {
-      const success = successes[i]
-      // check(
-      //   migrations[i],
-      //   `[db] migration V${success.version} was run successfully but no file found in db/migrations -- did you delete it?`
-      // )
+  for (let i = 0; i < successes.length; i++) {
+    const success = successes[i]
+    check(
+      migrations[i],
+      `[db] migration V${success.version} was run successfully but no file found in db/migrations -- did you delete it?`
+    )
 
-      // const migration = migrations[i]
-      // assert.equal(
-      //   success.checksum,
-      //   migration.checksum,
-      //   `[db] migration V${success.version} was run successfully but the file checksum doesn't match -- was it modified?`
-      // )
+    const migration = migrations[i]
+    assert.equal(
+      success.checksum,
+      migration.checksum,
+      `[db] migration V${success.version} was run successfully but the file checksum doesn't match -- was it modified?`
+    )
 
-      lastRank = success.installed_rank
-    }
+    lastRank = success.installed_rank
   }
   return lastRank
 }
