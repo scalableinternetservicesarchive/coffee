@@ -8,7 +8,6 @@ export const fetchUser = gql`
       # userType
       firstName
       lastName
-      hashedPassword
     }
   }
 `
