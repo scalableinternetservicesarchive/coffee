@@ -29,9 +29,12 @@ const main = async () => {
   if (numCafes === 0 || numUsers === 0 || numLikes === 0) {
     console.error("ERROR: NUM_CAFE, NUM_USER, NUM_LIKE_PER_USER must all be > 0.")
     process.exit(1);
-
   }
 
+  if (numLikes > numCafes) {
+    console.error("ERROR: number of likes per user > number of cafes");
+    process.exit(1);
+  }
   const losAngelesLoc = { lat: 34.052235, lon: -118.243683 };
 
   const cafesToAdd = [];
@@ -51,8 +54,6 @@ const main = async () => {
     .values(cafesToAdd)
     .execute();
 
-  //const cafeIds = cafeIdentifiers.map((obj: Identifier) => obj.id);
-  //console.log(cafeIds);
   console.log(`DONE`);
 
 
@@ -81,23 +82,24 @@ const main = async () => {
   const likesToAdd = [];
   for(let i = 0; i < numUsers; i++) {
     const userId = userIdentifiers[i].id;
-    //const user = new User();
-    //user.id = userId;
+    let bucket: number[] = [];
+    for (let k=0;k<=numCafes;k++) {
+        bucket.push(k);
+    }
+    // sample one without replacement
+    const getRandomFromBucket = () => {
+       const randomIndex = Math.floor(Math.random()*(bucket.length - 1));
+       return bucket.splice(randomIndex, 1)[0];
+    }
+
     for(let j = 0; j < numLikes; j++) {
-      const cafeIndex = Math.floor(Math.random() * (numCafes - 1));
-      const cafeId = cafeIdentifiers[cafeIndex].id;
-      //const cafe = new Cafe();
-      //cafe.id = cafeId;
+      const cafeId = cafeIdentifiers[getRandomFromBucket()].id;
       const like = {
         cafeId,
         userId
-        //user,
-        //cafe,
       };
-
       likesToAdd.push(like);
     }
-
   }
 
   await dbConnection

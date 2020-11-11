@@ -1,13 +1,13 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Index, BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Cafe } from './Cafe'
 import { User } from './User'
 
 @Entity()
+@Index(["userId", "cafeId"], { unique: true })
 export class Like extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  // NOTE: ManyToOne annotation allows us to omit @JoinColumn.
   @ManyToOne(() => User, user => user.likes)
   @JoinColumn({ name: 'userId' })
   user: User

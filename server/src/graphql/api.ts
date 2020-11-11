@@ -12,7 +12,7 @@ import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 */
 import { User } from '../entities/User'
-import { MutationAddLikeArgs, MutationDeleteLikeByIdArgs, MutationSignUpArgs, Resolvers } from './schema.types'
+import { MutationAddCafeArgs, MutationAddLikeArgs, MutationDeleteLikeByIdArgs, MutationSignUpArgs, Resolvers } from './schema.types'
 
 export const pubsub = new PubSub()
 
@@ -48,17 +48,14 @@ export const graphqlRoot: Resolvers<Context> = {
     },
     addLike: async (_, { cafeId }: MutationAddLikeArgs, ctx: Context) => {
       if (!ctx.user) {
-        // TODO: error that there is no user.
-        return null
+        throw new Error("No user detected.")
       }
       const newLike = new Like()
       const cafe = await Cafe.findOne({ where: { id: cafeId } })
       if (!cafe) {
-        // TODO: error that cafe doesn't exist
-        return null
+        throw new Error("Cafe not found.")
       }
-      // TODO: how to make it such tha we don't have to find the cafe every time?
-      // maybe do a join after getting the like?
+
       newLike.cafe = cafe
       newLike.user = ctx.user
 
@@ -67,8 +64,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
     deleteLikeById: async (_, { likeId }: MutationDeleteLikeByIdArgs, ctx: Context) => {
       if (!ctx.user) {
-        // TODO: unauthorized.
-        return false
+        throw new Error("No user detected.")
       }
       const res = await getConnection()
         .createQueryBuilder()
@@ -79,7 +75,7 @@ export const graphqlRoot: Resolvers<Context> = {
 
       return res.raw.affectedRows === 1
     },
-    addCafe: async (_, { name, long, lat }) => {
+    addCafe: async (_, { name, long, lat }: MutationAddCafeArgs) => {
       const c = new Cafe()
       c.name = name
       c.longitude = long
