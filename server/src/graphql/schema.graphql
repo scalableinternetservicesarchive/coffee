@@ -25,7 +25,7 @@ type Query {
   list_cafe: [cafeshop!]
 
   # Returns a list of likes
-  list_like: [like!]
+  list_like: [Like!]
 }
 
 type cafeshop{
@@ -54,11 +54,17 @@ type menus {
 
 }
 
-type like {
-  #joined column userID with cafe fig out later
-  cafe: cafeshop
-  user: [User!]
+type Cafe {
+  id: Int!
+  name: String!
+  longitude: Float!
+  latitude: Float!
+}
 
+type Like {
+  id: Int!
+  cafe: Cafe!
+  user: User!
 }
 
 type User {
@@ -70,6 +76,9 @@ type User {
   firstName: String!
   lastName: String!
   email: String!
+
+  # NOTE: This is deprecated, will be removed.
+  userType: UserType
 }
 
 type Mutation {
@@ -81,6 +90,12 @@ type Mutation {
 
   # sign up for new user, returning the new User's details
   signUp (email: String!, firstName: String!, lastName: String!, password: String!): User!
+
+  # add a like to the cafe for the currently signed-in user (based on auth token)
+  addLike (cafeId: Int!): Like
+
+  # delete like to the cafe. Must be owned by currently signed-in user.
+  deleteLikeById (likeId: Int!): Boolean!
 }
 
 type Subscription {

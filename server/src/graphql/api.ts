@@ -2,14 +2,18 @@ import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
 import * as argon2 from 'argon2';
+import { getConnection } from "typeorm";
+
 /*
 import { check } from '../../../common/src/util'
 import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 */
-import { User } from '../entities/User'
-import { Resolvers, MutationSignUpArgs } from './schema.types'
+import { User } from '../entities/User';
+import { Like } from '../entities/Like';
+import { Cafe } from '../entities/Cafe';
+import { Resolvers, MutationSignUpArgs, MutationDeleteLikeByIdArgs, MutationAddLikeArgs } from './schema.types'
 
 export const pubsub = new PubSub()
 
@@ -40,6 +44,43 @@ export const graphqlRoot: Resolvers<Context> = {
       newUser.lastName = lastName;
       const resultUser = await newUser.save();
       return resultUser;
+    },
+    addLike: async(_, {cafeId}: MutationAddLikeArgs, ctx: Context) => {
+      if (!ctx.user) {
+        // TODO: error that there is no user.
+        return null;
+      }
+      const newLike = new Like();
+      const cafe = await Cafe.findOne({ where: { id: cafeId }});
+      if (!cafe) {
+        // TODO: error that cafe doesn't exist
+        return null;
+      }
+      // TODO: how to make it such tha we don't have to find the cafe every time?
+      // maybe do a join after getting the like?
+      newLike.cafe = cafe;
+      newLike.user = ctx.user;
+
+      const like = await newLike.save();
+      return like;
+    },
+
+    deleteLikeById: async(_, {likeId}: MutationDeleteLikeByIdArgs, ctx: Context) => {
+      if (!ctx.user) {
+        // TODO: unauthorized.
+        return false;
+      }
+      const res = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Like)
+        .where("id = :id AND userId = :userId", { id: likeId, userId: ctx.user.id  })
+        .execute();
+
+      return res.raw.affectedRows === 1
+
+
+
     },
 
     /*

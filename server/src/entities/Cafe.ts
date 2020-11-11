@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, BaseEntity } from 'typeorm'
 import { Like } from './Like'
 
 @Entity()
-export class Cafe {
+export class Cafe extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -20,5 +20,6 @@ export class Cafe {
   //@Column({ nullable: true })
   //images: string[]
 
+  @OneToMany(() => Like, like => like.cafe)
   likes: Like[]
 }

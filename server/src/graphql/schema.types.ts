@@ -40,10 +40,19 @@ export interface Menus {
   items?: Maybe<Array<Scalars['String']>>
 }
 
+export interface Cafe {
+  __typename?: 'Cafe'
+  id: Scalars['Int']
+  name: Scalars['String']
+  longitude: Scalars['Float']
+  latitude: Scalars['Float']
+}
+
 export interface Like {
-  __typename?: 'like'
-  cafe?: Maybe<Cafeshop>
-  user?: Maybe<Array<User>>
+  __typename?: 'Like'
+  id: Scalars['Int']
+  cafe: Cafe
+  user: User
 }
 
 export interface User {
@@ -52,11 +61,14 @@ export interface User {
   firstName: Scalars['String']
   lastName: Scalars['String']
   email: Scalars['String']
+  userType?: Maybe<UserType>
 }
 
 export interface Mutation {
   __typename?: 'Mutation'
   signUp: User
+  addLike?: Maybe<Like>
+  deleteLikeById: Scalars['Boolean']
 }
 
 export interface MutationSignUpArgs {
@@ -64,6 +76,14 @@ export interface MutationSignUpArgs {
   firstName: Scalars['String']
   lastName: Scalars['String']
   password: Scalars['String']
+}
+
+export interface MutationAddLikeArgs {
+  cafeId: Scalars['Int']
+}
+
+export interface MutationDeleteLikeByIdArgs {
+  likeId: Scalars['Int']
 }
 
 export interface Subscription {
@@ -194,13 +214,14 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>
   Float: ResolverTypeWrapper<Scalars['Float']>
   menus: ResolverTypeWrapper<Menus>
-  like: ResolverTypeWrapper<Like>
+  Cafe: ResolverTypeWrapper<Cafe>
+  Like: ResolverTypeWrapper<Like>
   User: ResolverTypeWrapper<User>
   Mutation: ResolverTypeWrapper<{}>
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   Subscription: ResolverTypeWrapper<{}>
   UserType: UserType
   Survey: ResolverTypeWrapper<Survey>
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   SurveyQuestion: ResolverTypeWrapper<SurveyQuestion>
   SurveyAnswer: ResolverTypeWrapper<SurveyAnswer>
   SurveyInput: SurveyInput
@@ -214,12 +235,13 @@ export type ResolversParentTypes = {
   String: Scalars['String']
   Float: Scalars['Float']
   menus: Menus
-  like: Like
+  Cafe: Cafe
+  Like: Like
   User: User
   Mutation: {}
+  Boolean: Scalars['Boolean']
   Subscription: {}
   Survey: Survey
-  Boolean: Scalars['Boolean']
   SurveyQuestion: SurveyQuestion
   SurveyAnswer: SurveyAnswer
   SurveyInput: SurveyInput
@@ -238,7 +260,7 @@ export type QueryResolvers<
     RequireFields<QuerySurveyArgs, 'surveyId'>
   >
   list_cafe?: Resolver<Maybe<Array<ResolversTypes['cafeshop']>>, ParentType, ContextType>
-  list_like?: Resolver<Maybe<Array<ResolversTypes['like']>>, ParentType, ContextType>
+  list_like?: Resolver<Maybe<Array<ResolversTypes['Like']>>, ParentType, ContextType>
 }
 
 export type CafeshopResolvers<
@@ -262,12 +284,24 @@ export type MenusResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
+export type CafeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Cafe'] = ResolversParentTypes['Cafe']
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
+
 export type LikeResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['like'] = ResolversParentTypes['like']
+  ParentType extends ResolversParentTypes['Like'] = ResolversParentTypes['Like']
 > = {
-  cafe?: Resolver<Maybe<ResolversTypes['cafeshop']>, ParentType, ContextType>
-  user?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  cafe?: Resolver<ResolversTypes['Cafe'], ParentType, ContextType>
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -279,6 +313,7 @@ export type UserResolvers<
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  userType?: Resolver<Maybe<ResolversTypes['UserType']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
@@ -291,6 +326,18 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationSignUpArgs, 'email' | 'firstName' | 'lastName' | 'password'>
+  >
+  addLike?: Resolver<
+    Maybe<ResolversTypes['Like']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddLikeArgs, 'cafeId'>
+  >
+  deleteLikeById?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteLikeByIdArgs, 'likeId'>
   >
 }
 
@@ -346,7 +393,8 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>
   cafeshop?: CafeshopResolvers<ContextType>
   menus?: MenusResolvers<ContextType>
-  like?: LikeResolvers<ContextType>
+  Cafe?: CafeResolvers<ContextType>
+  Like?: LikeResolvers<ContextType>
   User?: UserResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Subscription?: SubscriptionResolvers<ContextType>

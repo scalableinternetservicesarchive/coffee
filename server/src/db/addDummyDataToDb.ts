@@ -26,6 +26,12 @@ const main = async () => {
   const numUsers = parseInt(process.env.NUM_USER || '100');
   const numLikes = parseInt(process.env.NUM_LIKE_PER_USER || '10');
 
+  if (numCafes === 0 || numUsers === 0 || numLikes === 0) {
+    console.error("ERROR: NUM_CAFE, NUM_USER, NUM_LIKE_PER_USER must all be > 0.")
+    process.exit(1);
+
+  }
+
   const losAngelesLoc = { lat: 34.052235, lon: -118.243683 };
 
   const cafesToAdd = [];
@@ -69,22 +75,24 @@ const main = async () => {
     .into(User)
     .values(usersToAdd)
     .execute();
-
+  console.log("DONE")
 
   console.log(`Adding ${numLikes} likes for each user...`);
   const likesToAdd = [];
   for(let i = 0; i < numUsers; i++) {
     const userId = userIdentifiers[i].id;
-    const user = new User();
-    user.id = userId;
+    //const user = new User();
+    //user.id = userId;
     for(let j = 0; j < numLikes; j++) {
       const cafeIndex = Math.floor(Math.random() * (numCafes - 1));
       const cafeId = cafeIdentifiers[cafeIndex].id;
-      const cafe = new Cafe();
-      cafe.id = cafeId;
+      //const cafe = new Cafe();
+      //cafe.id = cafeId;
       const like = {
-        user,
-        cafe,
+        cafeId,
+        userId
+        //user,
+        //cafe,
       };
 
       likesToAdd.push(like);
