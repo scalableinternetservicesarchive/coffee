@@ -98,7 +98,7 @@ type Mutation {
   deleteLikeById (likeId: Int!): Boolean!
 
   # adds a cafe
-  addCafe (name: String!, long: Int!, lat: Int!): Cafe!
+  addCafe (name: String!, long: Float!, lat: Float!): Cafe!
 }
 
 type Subscription {

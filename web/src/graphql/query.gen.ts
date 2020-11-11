@@ -10,12 +10,87 @@
 export interface FetchUserContext_self {
   __typename: "User";
   id: number;
-  name: string;
-  userType: UserType;
+  firstName: string;
+  lastName: string;
 }
 
 export interface FetchUserContext {
   self: FetchUserContext_self | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: FetchCafes
+// ====================================================
+
+export interface FetchCafes_cafes {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+  longitude: number;
+  latitude: number;
+}
+
+export interface FetchCafes {
+  cafes: FetchCafes_cafes[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: FetchLikes
+// ====================================================
+
+export interface FetchLikes_likes_cafe {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+  longitude: number;
+  latitude: number;
+}
+
+export interface FetchLikes_likes {
+  __typename: "Like";
+  cafe: FetchLikes_likes_cafe;
+}
+
+export interface FetchLikes {
+  likes: FetchLikes_likes[];
+}
+
+export interface FetchLikesVariables {
+  userId: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: AddCafe
+// ====================================================
+
+export interface AddCafe_addCafe {
+  __typename: "Cafe";
+  id: number;
+}
+
+export interface AddCafe {
+  addCafe: AddCafe_addCafe;
+}
+
+export interface AddCafeVariables {
+  name: string;
+  long: number;
+  lat: number;
 }
 
 /* tslint:disable */
@@ -193,6 +268,23 @@ export interface NextSurveyQuestionVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL fragment: Cafe
+// ====================================================
+
+export interface Cafe {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+  longitude: number;
+  latitude: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: Survey
 // ====================================================
 
@@ -248,11 +340,6 @@ export interface SurveyQuestion {
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
-
-export enum UserType {
-  ADMIN = "ADMIN",
-  USER = "USER",
-}
 
 export interface SurveyInput {
   questionId: number;

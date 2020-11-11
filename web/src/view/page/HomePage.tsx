@@ -5,6 +5,8 @@ import { H1, H2, H3 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
+import { CafeCreator } from '../cafe/CafeCreator'
+import { CafeList } from '../cafe/CafeList'
 import { Link } from '../nav/Link'
 import { AppRouteParams, getPath, Route } from '../nav/route'
 import { Page } from './Page'
@@ -22,6 +24,10 @@ export function HomePage(props: HomePageProps) {
       </Hero>
       <Content>
         <LContent>
+          <Section>
+            <CafeCreator />
+            <CafeList />
+          </Section>
           <Section>
             <H2>About CS 188</H2>
             <Spacer $h4 />

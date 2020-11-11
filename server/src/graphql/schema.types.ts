@@ -88,8 +88,8 @@ export interface MutationDeleteLikeByIdArgs {
 
 export interface MutationAddCafeArgs {
   name: Scalars['String']
-  long: Scalars['Int']
-  lat: Scalars['Int']
+  long: Scalars['Float']
+  lat: Scalars['Float']
 }
 
 export interface Subscription {
