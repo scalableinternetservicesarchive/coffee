@@ -1,19 +1,18 @@
+import * as argon2 from 'argon2'
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
-import * as argon2 from 'argon2';
-import { getConnection } from "typeorm";
-
+import { getConnection } from 'typeorm'
+import { Cafe } from '../entities/Cafe'
+import { Like } from '../entities/Like'
 /*
 import { check } from '../../../common/src/util'
 import { Survey } from '../entities/Survey'
 import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 */
-import { User } from '../entities/User';
-import { Like } from '../entities/Like';
-import { Cafe } from '../entities/Cafe';
-import { Resolvers, MutationSignUpArgs, MutationDeleteLikeByIdArgs, MutationAddLikeArgs } from './schema.types'
+import { User } from '../entities/User'
+import { MutationAddLikeArgs, MutationDeleteLikeByIdArgs, MutationSignUpArgs, Resolvers } from './schema.types'
 
 export const pubsub = new PubSub()
 
@@ -34,55 +33,61 @@ export const graphqlRoot: Resolvers<Context> = {
     self: (_, args, ctx) => ctx.user,
     // survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
     // surveys: () => Survey.find(),
+    cafes: () => Cafe.find(),
+    likes: (_, { userId }) => Like.find({ where: { user: { id: userId } } }),
   },
   Mutation: {
-    signUp: async(_, {email, firstName, lastName, password}: MutationSignUpArgs, ctx: Context) => {
-      const newUser = new User();
-      newUser.hashedPassword = await argon2.hash(password);
-      newUser.email = email;
-      newUser.firstName = firstName;
-      newUser.lastName = lastName;
-      const resultUser = await newUser.save();
-      return resultUser;
+    signUp: async (_, { email, firstName, lastName, password }: MutationSignUpArgs, ctx: Context) => {
+      const newUser = new User()
+      newUser.hashedPassword = await argon2.hash(password)
+      newUser.email = email
+      newUser.firstName = firstName
+      newUser.lastName = lastName
+      const resultUser = await newUser.save()
+      return resultUser
     },
-    addLike: async(_, {cafeId}: MutationAddLikeArgs, ctx: Context) => {
+    addLike: async (_, { cafeId }: MutationAddLikeArgs, ctx: Context) => {
       if (!ctx.user) {
         // TODO: error that there is no user.
-        return null;
+        return null
       }
-      const newLike = new Like();
-      const cafe = await Cafe.findOne({ where: { id: cafeId }});
+      const newLike = new Like()
+      const cafe = await Cafe.findOne({ where: { id: cafeId } })
       if (!cafe) {
         // TODO: error that cafe doesn't exist
-        return null;
+        return null
       }
       // TODO: how to make it such tha we don't have to find the cafe every time?
       // maybe do a join after getting the like?
-      newLike.cafe = cafe;
-      newLike.user = ctx.user;
+      newLike.cafe = cafe
+      newLike.user = ctx.user
 
-      const like = await newLike.save();
-      return like;
+      await newLike.save()
+      return newLike
     },
-
-    deleteLikeById: async(_, {likeId}: MutationDeleteLikeByIdArgs, ctx: Context) => {
+    deleteLikeById: async (_, { likeId }: MutationDeleteLikeByIdArgs, ctx: Context) => {
       if (!ctx.user) {
         // TODO: unauthorized.
-        return false;
+        return false
       }
       const res = await getConnection()
         .createQueryBuilder()
         .delete()
         .from(Like)
-        .where("id = :id AND userId = :userId", { id: likeId, userId: ctx.user.id  })
-        .execute();
+        .where('id = :id AND userId = :userId', { id: likeId, userId: ctx.user.id })
+        .execute()
 
       return res.raw.affectedRows === 1
-
-
-
     },
+    addCafe: async (_, { name, long, lat }) => {
+      const c = new Cafe()
+      c.name = name
+      c.longitude = long
+      c.latitude = lat
 
+      await c.save()
+      return c
+    },
     /*
     answerSurvey: async (_, { input }, ctx) => {
       const { answer, questionId } = input

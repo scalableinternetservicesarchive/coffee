@@ -3,8 +3,8 @@ import { createConnection } from 'typeorm'
 import { Cafe } from '../entities/Cafe'
 import { Like } from '../entities/Like'
 import { Menu } from '../entities/Menu'
-import { User } from '../entities/User'
 import { Session } from '../entities/Session'
+import { User } from '../entities/User'
 
 const baseConfig = {
   host: process.env.MYSQL_HOST || '127.0.0.1',
@@ -12,7 +12,6 @@ const baseConfig = {
   password: process.env.MYSQL_PASSWORD || 'password',
   database: process.env.MYSQL_DATABASE || 'coffee',
 }
-
 
 export async function initORM() {
   return await createConnection({

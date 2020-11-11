@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, JoinColumn, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Cafe } from './Cafe'
 import { User } from './User'
 
@@ -9,11 +9,11 @@ export class Like extends BaseEntity {
 
   // NOTE: ManyToOne annotation allows us to omit @JoinColumn.
   @ManyToOne(() => User, user => user.likes)
-  @JoinColumn({ name: "userId" })
+  @JoinColumn({ name: 'userId' })
   user: User
 
   @ManyToOne(() => Cafe, cafe => cafe.likes)
-  @JoinColumn({ name: "cafeId" })
+  @JoinColumn({ name: 'cafeId' })
   cafe: Cafe
 
   @Column({ nullable: false })
@@ -21,5 +21,4 @@ export class Like extends BaseEntity {
 
   @Column({ nullable: false })
   cafeId: number
-
 }

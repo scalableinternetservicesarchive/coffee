@@ -21,38 +21,38 @@ type Query {
   surveys: [Survey!]!
   survey (surveyId: Int!): Survey
 
-  # Return a list of all cafe in database
-  list_cafe: [cafeshop!]
+  # Return a list of all cafes in the database
+  cafes: [Cafe!]!
 
-  # Returns a list of likes
-  list_like: [Like!]
+  # Returns a list of likes for a specific user
+  likes (userId: Int!): [Like!]!
 }
 
-type cafeshop{
+# type cafeshop{
 
-   #cafe store id
-  cafeshop_id: String!
+#    #cafe store id
+#   cafeshop_id: String!
 
-  #cafe shop name
-  cafeshop_name: String!
+#   #cafe shop name
+#   cafeshop_name: String!
 
-  #Location to be added
-  longtitude: Float!
-  latitude: Float!
+#   #Location to be added
+#   longtitude: Float!
+#   latitude: Float!
 
-  #list of images URLS of this cafe stores
-  images: [String!]
+#   #list of images URLS of this cafe stores
+#   images: [String!]
 
-}
+# }
 
-type menus {
+# type menus {
 
-  #joinColumn figure out this later(cafeId)
-  cafe: cafeshop!
-  #list of drinks
-  items:[String!]
+#   #joinColumn figure out this later(cafeId)
+#   cafe: cafeshop!
+#   #list of drinks
+#   items: [String!]
 
-}
+# }
 
 type Cafe {
   id: Int!
@@ -68,7 +68,7 @@ type Like {
 }
 
 type User {
-  # NOTE: We don't put the hashedPassword here (for obvious security reasons), although it 
+  # NOTE: We don't put the hashedPassword here (for obvious security reasons), although it
   # exists in the DB.
 
   # user's ID.
@@ -83,10 +83,10 @@ type User {
 
 type Mutation {
   # Records an answer to a survey question presented in class.
-  #answerSurvey (input: SurveyInput!): Boolean!
+  answerSurvey (input: SurveyInput!): Boolean!
 
   # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
-  #nextSurveyQuestion (surveyId: Int!): Survey
+  nextSurveyQuestion (surveyId: Int!): Survey
 
   # sign up for new user, returning the new User's details
   signUp (email: String!, firstName: String!, lastName: String!, password: String!): User!
@@ -96,6 +96,9 @@ type Mutation {
 
   # delete like to the cafe. Must be owned by currently signed-in user.
   deleteLikeById (likeId: Int!): Boolean!
+
+  # adds a cafe
+  addCafe (name: String!, long: Int!, lat: Int!): Cafe!
 }
 
 type Subscription {

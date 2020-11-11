@@ -17,27 +17,16 @@ export interface Query {
   self?: Maybe<User>
   surveys: Array<Survey>
   survey?: Maybe<Survey>
-  list_cafe?: Maybe<Array<Cafeshop>>
-  list_like?: Maybe<Array<Like>>
+  cafes: Array<Cafe>
+  likes: Array<Like>
 }
 
 export interface QuerySurveyArgs {
   surveyId: Scalars['Int']
 }
 
-export interface Cafeshop {
-  __typename?: 'cafeshop'
-  cafeshop_id: Scalars['String']
-  cafeshop_name: Scalars['String']
-  longtitude: Scalars['Float']
-  latitude: Scalars['Float']
-  images?: Maybe<Array<Scalars['String']>>
-}
-
-export interface Menus {
-  __typename?: 'menus'
-  cafe: Cafeshop
-  items?: Maybe<Array<Scalars['String']>>
+export interface QueryLikesArgs {
+  userId: Scalars['Int']
 }
 
 export interface Cafe {
@@ -66,9 +55,20 @@ export interface User {
 
 export interface Mutation {
   __typename?: 'Mutation'
+  answerSurvey: Scalars['Boolean']
+  nextSurveyQuestion?: Maybe<Survey>
   signUp: User
   addLike?: Maybe<Like>
   deleteLikeById: Scalars['Boolean']
+  addCafe: Cafe
+}
+
+export interface MutationAnswerSurveyArgs {
+  input: SurveyInput
+}
+
+export interface MutationNextSurveyQuestionArgs {
+  surveyId: Scalars['Int']
 }
 
 export interface MutationSignUpArgs {
@@ -84,6 +84,12 @@ export interface MutationAddLikeArgs {
 
 export interface MutationDeleteLikeByIdArgs {
   likeId: Scalars['Int']
+}
+
+export interface MutationAddCafeArgs {
+  name: Scalars['String']
+  long: Scalars['Int']
+  lat: Scalars['Int']
 }
 
 export interface Subscription {
@@ -210,11 +216,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>
   Int: ResolverTypeWrapper<Scalars['Int']>
-  cafeshop: ResolverTypeWrapper<Cafeshop>
+  Cafe: ResolverTypeWrapper<Cafe>
   String: ResolverTypeWrapper<Scalars['String']>
   Float: ResolverTypeWrapper<Scalars['Float']>
-  menus: ResolverTypeWrapper<Menus>
-  Cafe: ResolverTypeWrapper<Cafe>
   Like: ResolverTypeWrapper<Like>
   User: ResolverTypeWrapper<User>
   Mutation: ResolverTypeWrapper<{}>
@@ -231,11 +235,9 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Query: {}
   Int: Scalars['Int']
-  cafeshop: Cafeshop
+  Cafe: Cafe
   String: Scalars['String']
   Float: Scalars['Float']
-  menus: Menus
-  Cafe: Cafe
   Like: Like
   User: User
   Mutation: {}
@@ -259,29 +261,8 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QuerySurveyArgs, 'surveyId'>
   >
-  list_cafe?: Resolver<Maybe<Array<ResolversTypes['cafeshop']>>, ParentType, ContextType>
-  list_like?: Resolver<Maybe<Array<ResolversTypes['Like']>>, ParentType, ContextType>
-}
-
-export type CafeshopResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['cafeshop'] = ResolversParentTypes['cafeshop']
-> = {
-  cafeshop_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  cafeshop_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
-  longtitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>
-  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>
-  images?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>
-}
-
-export type MenusResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['menus'] = ResolversParentTypes['menus']
-> = {
-  cafe?: Resolver<ResolversTypes['cafeshop'], ParentType, ContextType>
-  items?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+  cafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
+  likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType, RequireFields<QueryLikesArgs, 'userId'>>
 }
 
 export type CafeResolvers<
@@ -321,6 +302,18 @@ export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = {
+  answerSurvey?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAnswerSurveyArgs, 'input'>
+  >
+  nextSurveyQuestion?: Resolver<
+    Maybe<ResolversTypes['Survey']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationNextSurveyQuestionArgs, 'surveyId'>
+  >
   signUp?: Resolver<
     ResolversTypes['User'],
     ParentType,
@@ -338,6 +331,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDeleteLikeByIdArgs, 'likeId'>
+  >
+  addCafe?: Resolver<
+    ResolversTypes['Cafe'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddCafeArgs, 'name' | 'long' | 'lat'>
   >
 }
 
@@ -391,8 +390,6 @@ export type SurveyAnswerResolvers<
 
 export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>
-  cafeshop?: CafeshopResolvers<ContextType>
-  menus?: MenusResolvers<ContextType>
   Cafe?: CafeResolvers<ContextType>
   Like?: LikeResolvers<ContextType>
   User?: UserResolvers<ContextType>
