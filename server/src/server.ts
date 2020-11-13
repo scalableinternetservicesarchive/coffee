@@ -1,11 +1,13 @@
 require('honeycomb-beeline')({
-  writeKey: process.env.HONEYCOMB_KEY || 'd29d5f5ec24178320dae437383480737',
+  //writeKey: process.env.HONEYCOMB_KEY || 'd29d5f5ec24178320dae437383480737',
+  writeKey: process.env.HONEYCOMB_KEY || 'ebdfc9aff568ba7b7fd134de53fb571f',
   dataset: process.env.APP_NAME || 'coffee',
   serviceName: process.env.APPSERVER_TAG || 'local',
   enabledInstrumentations: ['express', 'mysql2', 'react-dom/server'],
   sampleRate: 10,
 })
 
+import * as argon2 from 'argon2'
 import assert from 'assert'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -14,7 +16,6 @@ import { getOperationAST, parse as parseGraphql, specifiedRules, subscribe as gq
 import { GraphQLServer } from 'graphql-yoga'
 import { forAwaitEach, isAsyncIterable } from 'iterall'
 import path from 'path'
-import * as argon2 from 'argon2';
 import 'reflect-metadata'
 import { v4 as uuidv4 } from 'uuid'
 import { checkEqual, Unpromise } from '../../common/src/util'
@@ -59,7 +60,7 @@ server.express.post(
     const email = req.body.email
     const password = req.body.password
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } })
 
     // can only log in if user available and (entered correct password OR admin password).
     if (!user || (password !== Config.adminPassword && !(await argon2.verify(user.hashedPassword, password)))) {
