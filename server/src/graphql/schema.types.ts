@@ -61,6 +61,7 @@ export interface Mutation {
   addLike?: Maybe<Like>
   deleteLikeById: Scalars['Boolean']
   addCafe: Cafe
+  getAllCafes?: Maybe<Array<Maybe<Cafe>>>
 }
 
 export interface MutationAnswerSurveyArgs {
@@ -90,6 +91,10 @@ export interface MutationAddCafeArgs {
   name: Scalars['String']
   long: Scalars['Float']
   lat: Scalars['Float']
+}
+
+export interface MutationGetAllCafesArgs {
+  cafeId: Scalars['Int']
 }
 
 export interface Subscription {
@@ -337,6 +342,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationAddCafeArgs, 'name' | 'long' | 'lat'>
+  >
+  getAllCafes?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['Cafe']>>>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationGetAllCafesArgs, 'cafeId'>
   >
 }
 

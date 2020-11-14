@@ -12,7 +12,7 @@ import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 */
 import { User } from '../entities/User'
-import { MutationAddCafeArgs, MutationAddLikeArgs, MutationDeleteLikeByIdArgs, MutationSignUpArgs, Resolvers } from './schema.types'
+import { MutationAddCafeArgs, MutationAddLikeArgs, MutationDeleteLikeByIdArgs, MutationGetAllCafesArgs, MutationSignUpArgs, Resolvers } from './schema.types'
 
 export const pubsub = new PubSub()
 
@@ -83,6 +83,19 @@ export const graphqlRoot: Resolvers<Context> = {
 
       await c.save()
       return c
+    },
+
+    getAllCafes: async (_,{cafeId}:MutationGetAllCafesArgs) =>{
+
+      let cafeList : Cafe[] = []
+      cafeList = await getConnection().
+                       createQueryBuilder().
+                       select("Cafe").from(Cafe,"CafeList").
+                       where("Cafe.id = cafeId").
+                       getMany();
+
+      return cafeList
+
     },
     /*
     answerSurvey: async (_, { input }, ctx) => {

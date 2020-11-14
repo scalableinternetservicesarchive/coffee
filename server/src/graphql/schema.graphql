@@ -99,6 +99,9 @@ type Mutation {
 
   # adds a cafe
   addCafe (name: String!, long: Float!, lat: Float!): Cafe!
+
+  # get all cafes
+  getAllCafes (cafeId: Int!): [Cafe]
 }
 
 type Subscription {
