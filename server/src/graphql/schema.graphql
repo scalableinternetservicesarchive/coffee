@@ -26,6 +26,9 @@ type Query {
 
   # Returns a list of likes for a specific user
   likes (userId: Int!): [Like!]!
+
+  # Returns a list of all likes
+  allLikes: [Like!]!
 }
 
 # type cafeshop{

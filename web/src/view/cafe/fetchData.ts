@@ -28,3 +28,18 @@ export const fetchLikes = gql`
   }
   ${fragmentCafe}
 `
+
+export const fetchAllLikes = gql`
+  query FetchAllLikes {
+    allLikes {
+      cafe {
+        id
+        name
+      }
+      user {
+        id
+        firstName
+      }
+    }
+  }
+`

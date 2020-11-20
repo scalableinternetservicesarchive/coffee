@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useState } from 'react'
 import { Button } from '../../style/button'
 import { H1 } from '../../style/header'
+import { Spacer } from '../../style/spacer'
 import { addCafe } from './mutateData'
 // import { getApolloClient } from '../../graphql/apolloClient'
 
@@ -12,6 +13,12 @@ export function CafeCreator() {
 
   function handleSubmit() {
     // TODO: check if cafe name is empty
+
+    if (name === '') {
+      alert('Please enter a cafe name.')
+      return
+    }
+
     addCafe(name, long, lat)
       .then(id => {
         console.log(`${id} created`)
@@ -51,6 +58,7 @@ export function CafeCreator() {
         />
       </div>
       <Button onClick={handleSubmit}>Confirm</Button>
+      <Spacer $h4 />
     </div>
   )
 }

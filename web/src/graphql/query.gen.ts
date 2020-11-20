@@ -75,6 +75,37 @@ export interface FetchLikesVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchAllLikes
+// ====================================================
+
+export interface FetchAllLikes_allLikes_cafe {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+}
+
+export interface FetchAllLikes_allLikes_user {
+  __typename: "User";
+  id: number;
+  firstName: string;
+}
+
+export interface FetchAllLikes_allLikes {
+  __typename: "Like";
+  cafe: FetchAllLikes_allLikes_cafe;
+  user: FetchAllLikes_allLikes_user;
+}
+
+export interface FetchAllLikes {
+  allLikes: FetchAllLikes_allLikes[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: AddCafe
 // ====================================================
 
@@ -91,6 +122,28 @@ export interface AddCafeVariables {
   name: string;
   long: number;
   lat: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: AddLike
+// ====================================================
+
+export interface AddLike_addLike {
+  __typename: "Like";
+  id: number;
+}
+
+export interface AddLike {
+  addLike: AddLike_addLike | null;
+}
+
+export interface AddLikeVariables {
+  cafeId: number;
 }
 
 /* tslint:disable */

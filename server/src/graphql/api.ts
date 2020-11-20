@@ -12,7 +12,14 @@ import { SurveyAnswer } from '../entities/SurveyAnswer'
 import { SurveyQuestion } from '../entities/SurveyQuestion'
 */
 import { User } from '../entities/User'
-import { MutationAddCafeArgs, MutationAddLikeArgs, MutationDeleteLikeByIdArgs, MutationGetAllCafesArgs, MutationSignUpArgs, Resolvers } from './schema.types'
+import {
+  MutationAddCafeArgs,
+  MutationAddLikeArgs,
+  MutationDeleteLikeByIdArgs,
+  MutationGetAllCafesArgs,
+  MutationSignUpArgs,
+  Resolvers,
+} from './schema.types'
 
 export const pubsub = new PubSub()
 
@@ -35,6 +42,7 @@ export const graphqlRoot: Resolvers<Context> = {
     // surveys: () => Survey.find(),
     cafes: () => Cafe.find(),
     likes: (_, { userId }) => Like.find({ where: { user: { id: userId } } }),
+    allLikes: () => Like.find(),
   },
   Mutation: {
     signUp: async (_, { email, firstName, lastName, password }: MutationSignUpArgs, ctx: Context) => {
@@ -48,12 +56,12 @@ export const graphqlRoot: Resolvers<Context> = {
     },
     addLike: async (_, { cafeId }: MutationAddLikeArgs, ctx: Context) => {
       if (!ctx.user) {
-        throw new Error("No user detected.")
+        throw new Error('No user detected.')
       }
       const newLike = new Like()
       const cafe = await Cafe.findOne({ where: { id: cafeId } })
       if (!cafe) {
-        throw new Error("Cafe not found.")
+        throw new Error('Cafe not found.')
       }
 
       newLike.cafe = cafe
@@ -64,7 +72,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
     deleteLikeById: async (_, { likeId }: MutationDeleteLikeByIdArgs, ctx: Context) => {
       if (!ctx.user) {
-        throw new Error("No user detected.")
+        throw new Error('No user detected.')
       }
       const res = await getConnection()
         .createQueryBuilder()
@@ -85,17 +93,16 @@ export const graphqlRoot: Resolvers<Context> = {
       return c
     },
 
-    getAllCafes: async (_,{cafeId}:MutationGetAllCafesArgs) =>{
-
-      let cafeList : Cafe[] = []
-      cafeList = await getConnection().
-                       createQueryBuilder().
-                       select("Cafe").from(Cafe,"CafeList").
-                       where("Cafe.id = cafeId").
-                       getMany();
+    getAllCafes: async (_, { cafeId }: MutationGetAllCafesArgs) => {
+      let cafeList: Cafe[] = []
+      cafeList = await getConnection()
+        .createQueryBuilder()
+        .select('Cafe')
+        .from(Cafe, 'CafeList')
+        .where('Cafe.id = cafeId')
+        .getMany()
 
       return cafeList
-
     },
     /*
     answerSurvey: async (_, { input }, ctx) => {

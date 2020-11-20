@@ -19,6 +19,7 @@ export interface Query {
   survey?: Maybe<Survey>
   cafes: Array<Cafe>
   likes: Array<Like>
+  allLikes: Array<Like>
 }
 
 export interface QuerySurveyArgs {
@@ -268,6 +269,7 @@ export type QueryResolvers<
   >
   cafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
   likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType, RequireFields<QueryLikesArgs, 'userId'>>
+  allLikes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType>
 }
 
 export type CafeResolvers<

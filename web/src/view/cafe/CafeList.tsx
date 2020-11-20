@@ -6,21 +6,34 @@ import { H1, H2 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { BodyText } from '../../style/text'
 import { fetchCafes } from './fetchData'
+import { addLike } from './mutateData'
 //import { getAllCafes } from './mutateData'
+
 export function CafeList() {
   const [showStuff, setShowStuff] = React.useState(false)
 
   return (
-    <p>
-      <h1>All coffee list</h1>
-      <Button onClick={() => setShowStuff(!showStuff)}>Get all Cafes</Button>
+    <div>
+      <H1>All Cafes</H1>
+      <Spacer $h4 />
+      <Button onClick={() => setShowStuff(!showStuff)}>Show / Hide Cafes</Button>
+      <Spacer $h4 />
       {showStuff && <FetchStuff />}
-    </p>
+    </div>
   )
 }
 
 function FetchStuff() {
   const { loading, data } = useQuery<FetchCafes>(fetchCafes)
+
+  function handleLike(cafeId: number) {
+    addLike(cafeId)
+      .then(id => {
+        console.log(`like ${id} created`)
+      })
+      .catch(err => console.log(err))
+  }
+
   if (loading) {
     return <div>loading...</div>
   }
@@ -29,18 +42,16 @@ function FetchStuff() {
   }
   return (
     <div>
-      <H1>All Cafes</H1>
-      <Spacer $w2 />
-      <div>
-        {data.cafes.map((s, i) => (
-          <div key={i}>
-            <H2>{s.name}</H2>
-            <BodyText>
-              Co-ordinates: {s.latitude}, {s.longitude}
-            </BodyText>
-          </div>
-        ))}
-      </div>
+      {data.cafes.map((s, i) => (
+        <div key={i} style={{ margin: '10px 0' }}>
+          <H2>
+            {s.name} <span onClick={() => handleLike(s.id)}>♡</span>
+          </H2>
+          <BodyText>
+            Co-ordinates: {s.latitude}, {s.longitude}
+          </BodyText>
+        </div>
+      ))}
     </div>
   )
 }
