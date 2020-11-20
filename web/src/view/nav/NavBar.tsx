@@ -12,7 +12,7 @@ import { link } from './Link'
 import { getLoginPath, getPath, getSurveyPath, Route } from './route'
 
 const title = {
-  name: 'CS188',
+  name: 'COFFEE',
   path: getPath(Route.HOME),
   title: true,
 }
