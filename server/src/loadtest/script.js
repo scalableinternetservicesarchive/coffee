@@ -5,12 +5,26 @@ import { Counter, Rate } from 'k6/metrics'
 export const options = {
   scenarios: {
     example_scenario: {
-      executor: 'constant-vus',
-      vus: 1000,
-      duration: '30s',
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '60s', target: 5000 },
+        { duration: '60s', target: 0 },
+      ],
+      gracefulRampDown: '0s',
     },
   },
 }
+
+// export const options = {
+//   scenarios: {
+//     example_scenario: {
+//       executor: 'constant-vus',
+//       vus: 1000,
+//       duration: '30s',
+//     },
+//   },
+// }
 
 export default function () {
   recordRates(http.get('http://localhost:3000/'))
