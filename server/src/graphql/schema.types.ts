@@ -20,6 +20,7 @@ export interface Query {
   cafes: Array<Cafe>
   likes: Array<Like>
   allLikes: Array<Like>
+  getTopTenCafes: Array<Cafe>
 }
 
 export interface QuerySurveyArgs {
@@ -30,12 +31,18 @@ export interface QueryLikesArgs {
   userId: Scalars['Int']
 }
 
+export interface QueryGetTopTenCafesArgs {
+  lat: Scalars['Float']
+  long: Scalars['Float']
+}
+
 export interface Cafe {
   __typename?: 'Cafe'
   id: Scalars['Int']
   name: Scalars['String']
   longitude: Scalars['Float']
   latitude: Scalars['Float']
+  totalLikes?: Maybe<Scalars['Int']>
 }
 
 export interface Like {
@@ -214,9 +221,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>
   Int: ResolverTypeWrapper<Scalars['Int']>
+  Float: ResolverTypeWrapper<Scalars['Float']>
   Cafe: ResolverTypeWrapper<Cafe>
   String: ResolverTypeWrapper<Scalars['String']>
-  Float: ResolverTypeWrapper<Scalars['Float']>
   Like: ResolverTypeWrapper<Like>
   User: ResolverTypeWrapper<User>
   Mutation: ResolverTypeWrapper<{}>
@@ -233,9 +240,9 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Query: {}
   Int: Scalars['Int']
+  Float: Scalars['Float']
   Cafe: Cafe
   String: Scalars['String']
-  Float: Scalars['Float']
   Like: Like
   User: User
   Mutation: {}
@@ -262,6 +269,12 @@ export type QueryResolvers<
   cafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
   likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType, RequireFields<QueryLikesArgs, 'userId'>>
   allLikes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType>
+  getTopTenCafes?: Resolver<
+    Array<ResolversTypes['Cafe']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetTopTenCafesArgs, 'lat' | 'long'>
+  >
 }
 
 export type CafeResolvers<
@@ -272,6 +285,7 @@ export type CafeResolvers<
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>
   longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>
   latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>
+  totalLikes?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 

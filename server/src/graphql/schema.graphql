@@ -29,6 +29,8 @@ type Query {
 
   # Returns a list of all likes
   allLikes: [Like!]!
+
+  getTopTenCafes (lat: Float!, long: Float!): [Cafe!]!
 }
 
 # type cafeshop{
@@ -62,6 +64,7 @@ type Cafe {
   name: String!
   longitude: Float!
   latitude: Float!
+  totalLikes: Int # Note that this is not in the DB, but is used to get the top 10 liked cafes
 }
 
 type Like {

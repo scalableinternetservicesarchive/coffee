@@ -7,6 +7,7 @@ import { style } from '../../style/styled'
 import { BodyText } from '../../style/text'
 import { CafeCreator } from '../cafe/CafeCreator'
 import { CafeList } from '../cafe/CafeList'
+import { TopTenCafes } from '../cafe/TopTenCafes'
 import { AppRouteParams } from '../nav/route'
 import { Page } from './Page'
 
@@ -55,6 +56,11 @@ export function HomePage(props: HomePageProps) {
                 </tbody>
               </table>
             </BodyText>
+          </Section>
+          <Section>
+            <H2> Top 10 cafes near you </H2>
+            <Spacer $h4 />
+            <TopTenCafes/>
           </Section>
           <Section>
             <H2>Recent Activity</H2>

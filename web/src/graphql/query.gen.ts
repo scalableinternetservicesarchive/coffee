@@ -75,6 +75,33 @@ export interface FetchLikesVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetTopTenCafesNearMe
+// ====================================================
+
+export interface GetTopTenCafesNearMe_getTopTenCafes {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+  totalLikes: number | null;
+  latitude: number;
+  longitude: number;
+}
+
+export interface GetTopTenCafesNearMe {
+  getTopTenCafes: GetTopTenCafesNearMe_getTopTenCafes[];
+}
+
+export interface GetTopTenCafesNearMeVariables {
+  lat: number;
+  long: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchAllLikes
 // ====================================================
 

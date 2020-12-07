@@ -36,11 +36,36 @@ interface Context {
 export const graphqlRoot: Resolvers<Context> = {
   Query: {
     self: (_, args, ctx) => ctx.user,
-    // survey: async (_, { surveyId }) => (await Survey.findOne({ where: { id: surveyId } })) || null,
-    // surveys: () => Survey.find(),
     cafes: () => Cafe.find(),
     likes: (_, { userId }) => Like.find({ where: { user: { id: userId } } }),
     allLikes: () => Like.find(),
+    getTopTenCafes: async (_, {lat, long }) => {
+      // TODO: do haversine distance when michael figures it out, OR:
+      // https://www.databasejournal.com/features/mysql/mysql-calculating-distance-based-on-latitude-and-longitude.html
+      // TODO: this is to be optimzied by using redis, and updated using a bg cron process.
+      return await getConnection()
+        .createQueryBuilder()
+        .addSelect("COUNT(1)", "totalLikes")
+        .addSelect("cafe.name", "name")
+        .addSelect("latitude")
+        .addSelect("longitude")
+        .addSelect("cafe.name", "name")
+        .addSelect("cafe.id", "id")
+        .from(Cafe, "cafe")
+        .innerJoin('cafe.likes', 'like')
+        .groupBy('cafe.id')
+        .orderBy({ totalLikes: "DESC" })
+        .limit(10)
+        .getRawMany() // use getRawMany since totalLikes isnt part of the entity, and is processed aggregated data.
+      //
+      /*
+        SELECT COUNT(*) as totalLikes, c.name, c.id FROM cafe c
+        INNER JOIN `like` l ON c.id = l.cafeId
+        GROUP BY c.id
+        ORDER BY totalLikes DESC
+        LIMIT 10;
+       */
+    }
   },
   Mutation: {
     addLike: async (_, { cafeId }: MutationAddLikeArgs, ctx: Context) => {
