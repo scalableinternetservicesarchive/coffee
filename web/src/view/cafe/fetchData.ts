@@ -29,6 +29,18 @@ export const fetchLikes = gql`
   ${fragmentCafe}
 `
 
+export const fetchTopTenCafesNearMe = gql`
+  query GetTopTenCafesNearMe($lat: Float!, $long: Float!) {
+    getTopTenCafes(lat: $lat, long: $long){
+      id
+      name
+      totalLikes
+      latitude
+      longitude
+    }
+  }
+`
+
 export const fetchAllLikes = gql`
   query FetchAllLikes {
     allLikes {
