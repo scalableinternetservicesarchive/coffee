@@ -18,6 +18,7 @@ import * as faker from 'faker';
 import * as argon2 from 'argon2';
 import { Cafe } from '../entities/Cafe';
 import { User } from '../entities/User';
+import { metropolitanLocations } from '../../../common/src/metropolitanLocations'
 import { Like } from '../entities/Like';
 
 const main = async () => {
@@ -35,16 +36,22 @@ const main = async () => {
     console.error("ERROR: number of likes per user > number of cafes");
     process.exit(1);
   }
-  const losAngelesLoc = { lat: 34.052235, lon: -118.243683 };
 
   const cafesToAdd = [];
-  console.log(`Adding ${numCafes} cafes..`);
-  for(let i = 0; i < numCafes; i++) {
-    const latDelta = (0.1) * (Math.random() * 2 - 1);
-    const lonDelta = (0.1) * (Math.random() * 2 - 1);
-    const lat = losAngelesLoc.lat + latDelta;
-    const lon = losAngelesLoc.lon + lonDelta;
-    cafesToAdd.push({ name: faker.fake("{{lorem.words}}"), longitude: lon, latitude: lat });
+  console.log(`Adding ${numCafes} cafes in total..`)
+
+  const numChunks = metropolitanLocations.length
+  for (let chunk_i = 0; chunk_i < numChunks; chunk_i++) {
+    const chunkSize = chunk_i + 1 === numChunks ? Math.ceil(numCafes/numChunks) : Math.floor(numCafes / numChunks)
+    console.log(`Adding ${chunkSize} cafes to ${metropolitanLocations[chunk_i].name}...`);
+    for(let i = 0; i < chunkSize; i++) {
+      const latDelta = (0.1) * (Math.random() * 2 - 1);
+      const lonDelta = (0.1) * (Math.random() * 2 - 1);
+      const lat = metropolitanLocations[chunk_i].lat + latDelta;
+      const lon = metropolitanLocations[chunk_i].long + lonDelta;
+      cafesToAdd.push({ name: faker.fake("{{lorem.words}}"), longitude: lon, latitude: lat });
+    }
+
   }
 
   const { identifiers: cafeIdentifiers } = await dbConnection

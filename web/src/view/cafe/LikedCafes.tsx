@@ -7,12 +7,19 @@ import { BodyText } from '../../style/text'
 import { fetchLikedCafes } from './fetchData'
 import { addLike } from './mutateData'
 import { UserContext } from '../auth/user'
+import { getHaversineDistanceMiles } from '../../../../common/src/haversine'
+// TODO: replace with GPS here. (improvement, not necessary though)
+// similar like a context
+let myLat =  34.06;
+let myLong = 118.23;
 
 export function LikedCafes () {
-  const { loading, data } = useQuery<GetLikedCafes>(fetchLikedCafes)
-
   const { user } = useContext(UserContext)
+  if (!user) {
+    return <div>Sign up or log in to like a cafe!</div>
+  }
 
+  const { loading, data } = useQuery<GetLikedCafes>(fetchLikedCafes)
   // TODO: figure out handleLike here too
   function handleLike(cafeId: number) {
     addLike(cafeId)
@@ -36,7 +43,7 @@ export function LikedCafes () {
             {s.name} { user && <span onClick={() => handleLike(s.id)}>♥</span> }
           </H3>
           <BodyText>
-            Co-ordinates: {s.latitude}, {s.longitude}
+            {getHaversineDistanceMiles(s.latitude, s.longitude, myLat, myLong).toFixed(1)} mi away
           </BodyText>
         </div>
       ))}

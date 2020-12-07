@@ -2,18 +2,22 @@ import { useQuery } from '@apollo/client'
 import * as React from 'react'
 import { useContext } from 'react';
 import { GetTopTenCafesNearMe, GetTopTenCafesNearMe_getTopTenCafes } from '../../graphql/query.gen'
-import { H3 } from '../../style/header'
+import { getNearestMetroLocation } from '../../../../common/src/metropolitanLocations'
+import { getHaversineDistanceMiles } from '../../../../common/src/haversine'
+import { H2, H4 } from '../../style/header'
 import { BodyText } from '../../style/text'
 import { fetchTopTenCafesNearMe } from './fetchData'
 import { addLike } from './mutateData'
 import { UserContext } from '../auth/user'
+// TODO: replace with GPS here. (improvement, not necessary though)
+let myLat =  34.06;
+let myLong = 118.23;
 
 export function TopTenCafes () {
   const { loading, data } = useQuery<GetTopTenCafesNearMe>(fetchTopTenCafesNearMe, {
     variables: {
-      // TODO: replace with GPS here. (improvement, not necessary though)
-      lat: 34.06,
-      long: -118.23
+      lat: myLat,
+      long: myLong
     }
   })
 
@@ -34,18 +38,22 @@ export function TopTenCafes () {
   if (!data || data.getTopTenCafes.length === 0) {
     return <div>no cafes near you. Sorry :(</div>
   }
+  const nearestMetroArea = getNearestMetroLocation(myLat, myLong)
   return (
     <div>
+      <H2>
+        Top 10 cafes in {nearestMetroArea.name}
+      </H2>
       {data.getTopTenCafes.map((s: GetTopTenCafesNearMe_getTopTenCafes) => (
         <div key={s.id} style={{ margin: '10px 0' }}>
-          <H3>
+          <H4>
             {s.name} { user && <span onClick={() => handleLike(s.id)}>♡</span> }
-          </H3>
+          </H4>
           <BodyText>
             Likes: {s.totalLikes}
           </BodyText>
           <BodyText>
-            Co-ordinates: {s.latitude}, {s.longitude}
+            {getHaversineDistanceMiles(s.latitude, s.longitude, myLat, myLong).toFixed(1)} mi away
           </BodyText>
         </div>
       ))}

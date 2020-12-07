@@ -1,16 +1,12 @@
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
+import { redis } from '../db/redis'
 import path from 'path'
 import { getConnection } from 'typeorm'
 import { Cafe } from '../entities/Cafe'
 import { Like } from '../entities/Like'
 import { Menu } from '../entities/Menu'
-/*
-import { check } from '../../../common/src/util'
-import { Survey } from '../entities/Survey'
-import { SurveyAnswer } from '../entities/SurveyAnswer'
-import { SurveyQuestion } from '../entities/SurveyQuestion'
-*/
+import { getNearestMetroLocation } from '../../../common/src/metropolitanLocations'
 import { User } from '../entities/User'
 import {
   MutationAddCafeArgs,
@@ -37,6 +33,7 @@ interface Context {
   response: Response
   pubsub: PubSub
 }
+const redisTtlSecs = parseInt(process.env.REDIS_CACHE_TTL_SECS || '30') || 30
 
 export const graphqlRoot: Resolvers<Context> = {
   Query: {
@@ -79,30 +76,46 @@ export const graphqlRoot: Resolvers<Context> = {
         .getRawMany()
     },
     getTopTenCafes: async (_, { lat, long }) => {
-      // TODO: do haversine distance when michael figures it out, OR:
-      // https://www.databasejournal.com/features/mysql/mysql-calculating-distance-based-on-latitude-and-longitude.html
-      // TODO: this is to be optimzied by using redis, and updated using a bg cron process.
-      return await getConnection()
-        .createQueryBuilder()
-        .addSelect('COUNT(1)', 'totalLikes')
-        .addSelect('cafe.name', 'name')
-        .addSelect('latitude')
-        .addSelect('longitude')
-        .addSelect('cafe.id', 'id')
-        .from(Cafe, 'cafe')
-        .innerJoin('cafe.likes', 'like')
-        .groupBy('cafe.id')
-        .orderBy({ totalLikes: 'DESC' })
-        .limit(10)
-        .getRawMany() // use getRawMany since totalLikes isnt part of the entity, and is processed aggregated data.
-      //
-      /*
-        SELECT COUNT(*) as totalLikes, c.name, c.id FROM cafe c
-        INNER JOIN `like` l ON c.id = l.cafeId
-        GROUP BY c.id
-        ORDER BY totalLikes DESC
-        LIMIT 10;
-       */
+      // fetches the top ten cafes in the nearest metropolitan area of the person.
+      // can do experiments here to vary the number of metropolitan areas when not using cache. 
+      const fetchTopTenCafes = async (lat: number, long: number) => {
+        // TODO: do haversine distance when michael figures it out, OR:
+        // https://www.databasejournal.com/features/mysql/mysql-calculating-distance-based-on-latitude-and-longitude.html
+        return getConnection()
+          .createQueryBuilder()
+          .addSelect('COUNT(1)', 'totalLikes')
+          .addSelect('cafe.name', 'name')
+          .addSelect('latitude')
+          .addSelect('longitude')
+          .addSelect('cafe.id', 'id')
+          .from(Cafe, 'cafe')
+          .innerJoin('cafe.likes', 'like')
+          .groupBy('cafe.id')
+          .orderBy({ totalLikes: 'DESC' })
+          .limit(10)
+          .getRawMany() // use getRawMany since totalLikes isnt part of the entity, and is processed aggregated data.
+      };
+      // first, get the nearest metropolitan location.
+      const nearestMetroArea = getNearestMetroLocation(lat, long)
+
+      if (process.env.ENABLE_CACHING_OPTIMIZATION === "yes") {
+        const redisKey = 'top-10-' + nearestMetroArea.slug
+        const cacheResult = await redis.get(redisKey)
+        let data;
+        if (cacheResult) {
+          try {
+            data = JSON.parse(cacheResult)
+            return data
+          } catch(e) {
+            console.log("Invalid JSON in redis cache value. Re-querying & saving to cache")
+          }
+        }
+        data = await fetchTopTenCafes(nearestMetroArea.lat, nearestMetroArea.long)
+        await redis.setex(redisKey, redisTtlSecs, JSON.stringify(data))
+        return data
+      } else {
+        return await fetchTopTenCafes(nearestMetroArea.lat, nearestMetroArea.long)
+      }
     },
   },
   Mutation: {
@@ -167,36 +180,5 @@ export const graphqlRoot: Resolvers<Context> = {
 
       return cafeList
     },
-    /*
-    answerSurvey: async (_, { input }, ctx) => {
-      const { answer, questionId } = input
-      const question = check(await SurveyQuestion.findOne({ where: { id: questionId }, relations: ['survey'] }))
-
-      const surveyAnswer = new SurveyAnswer()
-      surveyAnswer.question = question
-      surveyAnswer.answer = answer
-      await surveyAnswer.save()
-
-      question.survey.currentQuestion?.answers.push(surveyAnswer)
-      ctx.pubsub.publish('SURVEY_UPDATE_' + question.survey.id, question.survey)
-
-      return true
-    },
-    nextSurveyQuestion: async (_, { surveyId }, ctx) => {
-      // check(ctx.user?.userType === UserType.Admin)
-      const survey = check(await Survey.findOne({ where: { id: surveyId } }))
-      survey.currQuestion = survey.currQuestion == null ? 0 : survey.currQuestion + 1
-      await survey.save()
-      ctx.pubsub.publish('SURVEY_UPDATE_' + surveyId, survey)
-      return survey
-    },
-  }
-  Subscription: {
-    surveyUpdates: {
-      subscribe: (_, { surveyId }, context) => context.pubsub.asyncIterator('SURVEY_UPDATE_' + surveyId),
-      resolve: (payload: any) => payload,
-    },
-
-  */
   },
 }

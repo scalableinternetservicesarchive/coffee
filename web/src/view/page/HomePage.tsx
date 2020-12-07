@@ -64,8 +64,6 @@ export function HomePage(props: HomePageProps) {
             <LikedCafes/>
           </Section>
           <Section>
-            <H2> Top 10 cafes near you </H2>
-            <Spacer $h4 />
             <TopTenCafes/>
           </Section>
           <Section>

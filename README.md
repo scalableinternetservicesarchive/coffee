@@ -2,6 +2,16 @@
 
 Welcome to Cloud City!
 
+## feature flags (for loadtest experiments)
+
+### Enabling caching for top 10 
+please supply the following arguments to enable caching the top 10 coffee shops
+for each metropolitan area.
+```
+ENABLE_CACHING_OPTIMIZATION=yes
+REDIS_CACHE_TTL_SECS=15 # seconds for redis key Time-To-Live
+```
+
 ## Dependencies
 
 For the [Quickstart](https://github.com/rothfels/coffee#Quickstart), you will need:
