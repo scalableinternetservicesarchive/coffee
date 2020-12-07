@@ -75,6 +75,27 @@ export interface FetchLikesVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetLikedCafes
+// ====================================================
+
+export interface GetLikedCafes_getLikedCafes {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface GetLikedCafes {
+  getLikedCafes: GetLikedCafes_getLikedCafes[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetTopTenCafesNearMe
 // ====================================================
 

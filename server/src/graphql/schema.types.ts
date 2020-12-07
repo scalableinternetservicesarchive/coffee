@@ -21,6 +21,7 @@ export interface Query {
   likes: Array<Like>
   allLikes: Array<Like>
   getTopTenCafes: Array<Cafe>
+  getLikedCafes: Array<Cafe>
 }
 
 export interface QuerySurveyArgs {
@@ -275,6 +276,7 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryGetTopTenCafesArgs, 'lat' | 'long'>
   >
+  getLikedCafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
 }
 
 export type CafeResolvers<

@@ -1,10 +1,12 @@
 import { useQuery } from '@apollo/client'
 import * as React from 'react'
+import { useContext } from 'react';
 import { GetTopTenCafesNearMe, GetTopTenCafesNearMe_getTopTenCafes } from '../../graphql/query.gen'
 import { H3 } from '../../style/header'
 import { BodyText } from '../../style/text'
 import { fetchTopTenCafesNearMe } from './fetchData'
 import { addLike } from './mutateData'
+import { UserContext } from '../auth/user'
 
 export function TopTenCafes () {
   const { loading, data } = useQuery<GetTopTenCafesNearMe>(fetchTopTenCafesNearMe, {
@@ -14,6 +16,8 @@ export function TopTenCafes () {
       long: -118.23
     }
   })
+
+  const { user } = useContext(UserContext)
 
   // TODO: figure out handleLike in this top ten cafe thing
   function handleLike(cafeId: number) {
@@ -35,7 +39,7 @@ export function TopTenCafes () {
       {data.getTopTenCafes.map((s: GetTopTenCafesNearMe_getTopTenCafes) => (
         <div key={s.id} style={{ margin: '10px 0' }}>
           <H3>
-            {s.name} <span onClick={() => handleLike(s.id)}>♡</span>
+            {s.name} { user && <span onClick={() => handleLike(s.id)}>♡</span> }
           </H3>
           <BodyText>
             Likes: {s.totalLikes}

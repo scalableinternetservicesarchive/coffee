@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client'
 import * as React from 'react'
+import { useContext } from 'react'
 import { FetchCafes } from '../../graphql/query.gen'
 import { Button } from '../../style/button'
 import { H1, H2 } from '../../style/header'
@@ -7,6 +8,7 @@ import { Spacer } from '../../style/spacer'
 import { BodyText } from '../../style/text'
 import { fetchCafes } from './fetchData'
 import { addLike } from './mutateData'
+import { UserContext } from '../auth/user'
 //import { getAllCafes } from './mutateData'
 
 export function CafeList() {
@@ -24,6 +26,7 @@ export function CafeList() {
 }
 
 function FetchStuff() {
+  const { user } = useContext(UserContext)
   const { loading, data } = useQuery<FetchCafes>(fetchCafes)
 
   function handleLike(cafeId: number) {
@@ -45,7 +48,7 @@ function FetchStuff() {
       {data.cafes.map((s, i) => (
         <div key={i} style={{ margin: '10px 0' }}>
           <H2>
-            {s.name} <span onClick={() => handleLike(s.id)}>♡</span>
+            {s.name} { user && <span onClick={() => handleLike(s.id)}>♡</span> } 
           </H2>
           <BodyText>
             Co-ordinates: {s.latitude}, {s.longitude}

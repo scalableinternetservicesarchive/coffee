@@ -39,6 +39,23 @@ export const graphqlRoot: Resolvers<Context> = {
     cafes: () => Cafe.find(),
     likes: (_, { userId }) => Like.find({ where: { user: { id: userId } } }),
     allLikes: () => Like.find(),
+
+    getLikedCafes: async (_, args, ctx) => {
+      // get my liked cafes 
+      if (!ctx.user) {
+        throw new Error('No user detected.')
+      }
+      return await getConnection()
+        .createQueryBuilder()
+        .addSelect("cafe.name", "name")
+        .addSelect("cafe.latitude", "latitude")
+        .addSelect("cafe.longitude", "longitude")
+        .addSelect("cafe.id", "id")
+        .from(Like, "like")
+        .innerJoin('like.cafe', 'cafe')
+        .where("like.userId = :userId", { userId: ctx.user.id })
+        .getRawMany()
+    },
     getTopTenCafes: async (_, {lat, long }) => {
       // TODO: do haversine distance when michael figures it out, OR:
       // https://www.databasejournal.com/features/mysql/mysql-calculating-distance-based-on-latitude-and-longitude.html
@@ -49,7 +66,6 @@ export const graphqlRoot: Resolvers<Context> = {
         .addSelect("cafe.name", "name")
         .addSelect("latitude")
         .addSelect("longitude")
-        .addSelect("cafe.name", "name")
         .addSelect("cafe.id", "id")
         .from(Cafe, "cafe")
         .innerJoin('cafe.likes', 'like')
