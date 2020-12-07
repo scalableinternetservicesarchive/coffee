@@ -54,7 +54,7 @@ export const graphqlRoot: Resolvers<Context> = {
         .addSelect('menu.cafeId', 'cafeId')
         .addSelect('menu.id', 'id')
         .addSelect('menu.menuDescription', 'menuDescription')
-        .from(Menu)
+        .from(Menu, 'menu')
         .where('menu.cafeId = :cafeId', { cafeId: args.cafeId })
         .getRawOne()
     },
