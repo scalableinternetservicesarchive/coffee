@@ -39,7 +39,7 @@ export function Login(props: LoginProps) {
       .then(async res => {
         const resObj = await res.json()
         check(res.ok, resObj.error ? resObj.error : 'response status ' + res.status)
-        return res.text()
+        return resObj
       })
       .then(() => props.onSuccessAuth ? props.onSuccessAuth() : window.location.reload())
       .catch(err => {
@@ -70,7 +70,7 @@ export function Login(props: LoginProps) {
       .then(async res => {
         const resObj = await res.json()
         check(res.ok, resObj.error ? resObj.error : 'response status ' + res.status)
-        return res.text()
+        return resObj
       })
       .then(() => props.onSuccessAuth ? props.onSuccessAuth() : window.location.reload())
       .catch(err => {
