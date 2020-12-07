@@ -2,33 +2,66 @@ import http from 'k6/http'
 import { sleep } from 'k6'
 import { Counter, Rate } from 'k6/metrics'
 
-export const options = {
-  scenarios: {
-    example_scenario: {
-      executor: 'ramping-vus',
-      startVUs: 0,
-      stages: [
-        { duration: '60s', target: 5000 },
-        { duration: '60s', target: 0 },
-      ],
-      gracefulRampDown: '0s',
-    },
-  },
-}
-
 // export const options = {
 //   scenarios: {
 //     example_scenario: {
-//       executor: 'constant-vus',
-//       vus: 1000,
-//       duration: '30s',
+//       executor: 'ramping-vus',
+//       startVUs: 0,
+//       stages: [
+//         { duration: '60s', target: 5000 },
+//         { duration: '60s', target: 0 },
+//       ],
+//       gracefulRampDown: '0s',
 //     },
 //   },
 // }
 
+
+export const options = {
+  scenarios: {
+    example_scenario: {
+      executor: 'constant-vus',
+      vus: 1000,
+      duration: '30s',
+    },
+  },
+}
+
 export default function () {
-  recordRates(http.get('http://localhost:3000/'))
+  //ecordRates(http.get('http://localhost:3000/'))
+  recordRates(http.get('http://localhost:3000/app/index'))
   sleep(Math.random() * 3)
+  recordRates(
+    http.post(
+      'http://localhost:3000/graphql',
+
+      //'mutation addMenu($cafeId: Int!, $item: String!){ addMenu(cafeId:$cafeId, item:$item){ idcafeId menuDescription}}',
+      //add cafe test //'{"operationName":"AddCafe","variables":{"name":"asdaasda","long":412,"lat":231},"query":"mutation AddCafe($name: String!, $long: Float!, $lat: Float!) {\n  addCafe(name: $name, long: $long, lat: $lat) {\n    id\n    __typename\n  }\n}\n"}',
+      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
+      {
+        headers:{
+          'Content-Type':'application/json',
+        },
+
+      }
+    )
+  )
+
+  // recordRates(
+  //   const resp = http.post(
+  //   'http://localhost:3000/graphql',
+  //     'mutation addMenu($cafeId: Int!, $item: String!){ addMenu(cafeId:$cafeId, item:$item){ idcafeId menuDescription}}',
+  //     {
+  //     headers: {
+  //       '"cafeId": 1, "item"': '"my menu here"'
+  //     },
+  //     }
+  // )
+
+  // recordRates(http.get('https://cs188.cloudcity.computer/app/index'))
+  // sleep(Math.random() * 3)
+
+
 }
 
 const count200 = new Counter('status_code_2xx')
