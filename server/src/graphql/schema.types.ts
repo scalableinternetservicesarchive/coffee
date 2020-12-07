@@ -22,6 +22,7 @@ export interface Query {
   allLikes: Array<Like>
   getTopTenCafes: Array<Cafe>
   getLikedCafes: Array<Cafe>
+  getMenuForCafeId?: Maybe<Menu>
 }
 
 export interface QuerySurveyArgs {
@@ -35,6 +36,17 @@ export interface QueryLikesArgs {
 export interface QueryGetTopTenCafesArgs {
   lat: Scalars['Float']
   long: Scalars['Float']
+}
+
+export interface QueryGetMenuForCafeIdArgs {
+  cafeId: Scalars['Int']
+}
+
+export interface Menu {
+  __typename?: 'Menu'
+  id: Scalars['Int']
+  menuDescription: Scalars['String']
+  cafeId: Scalars['Int']
 }
 
 export interface Cafe {
@@ -223,8 +235,9 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>
   Int: ResolverTypeWrapper<Scalars['Int']>
   Float: ResolverTypeWrapper<Scalars['Float']>
-  Cafe: ResolverTypeWrapper<Cafe>
+  Menu: ResolverTypeWrapper<Menu>
   String: ResolverTypeWrapper<Scalars['String']>
+  Cafe: ResolverTypeWrapper<Cafe>
   Like: ResolverTypeWrapper<Like>
   User: ResolverTypeWrapper<User>
   Mutation: ResolverTypeWrapper<{}>
@@ -242,8 +255,9 @@ export type ResolversParentTypes = {
   Query: {}
   Int: Scalars['Int']
   Float: Scalars['Float']
-  Cafe: Cafe
+  Menu: Menu
   String: Scalars['String']
+  Cafe: Cafe
   Like: Like
   User: User
   Mutation: {}
@@ -277,6 +291,22 @@ export type QueryResolvers<
     RequireFields<QueryGetTopTenCafesArgs, 'lat' | 'long'>
   >
   getLikedCafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
+  getMenuForCafeId?: Resolver<
+    Maybe<ResolversTypes['Menu']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetMenuForCafeIdArgs, 'cafeId'>
+  >
+}
+
+export type MenuResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Menu'] = ResolversParentTypes['Menu']
+> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  menuDescription?: Resolver<ResolversTypes['String'], ParentType, ContextType>
+  cafeId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
 export type CafeResolvers<
@@ -405,6 +435,7 @@ export type SurveyAnswerResolvers<
 
 export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>
+  Menu?: MenuResolvers<ContextType>
   Cafe?: CafeResolvers<ContextType>
   Like?: LikeResolvers<ContextType>
   User?: UserResolvers<ContextType>

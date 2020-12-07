@@ -34,6 +34,9 @@ type Query {
 
   # get all cafes liked by user
   getLikedCafes: [Cafe!]!
+
+  # view menu for cafeId
+  getMenuForCafeId (cafeId: Int!): Menu
 }
 
 # type cafeshop{
@@ -61,6 +64,12 @@ type Query {
 #   items: [String!]
 
 # }
+
+type Menu {
+  id: Int!
+  menuDescription: String!
+  cafeId: Int!
+}
 
 type Cafe {
   id: Int!
