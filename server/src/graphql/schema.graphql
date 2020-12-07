@@ -91,9 +91,6 @@ type Mutation {
   # Moves the survey to the next question (or starts it if it hasn't started). ADMIN only.
   nextSurveyQuestion (surveyId: Int!): Survey
 
-  # sign up for new user, returning the new User's details
-  signUp (email: String!, firstName: String!, lastName: String!, password: String!): User!
-
   # add a like to the cafe for the currently signed-in user (based on auth token)
   addLike (cafeId: Int!): Like
 

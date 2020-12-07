@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2'
 import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import path from 'path'
@@ -17,7 +16,6 @@ import {
   MutationAddLikeArgs,
   MutationDeleteLikeByIdArgs,
   MutationGetAllCafesArgs,
-  MutationSignUpArgs,
   Resolvers,
 } from './schema.types'
 
@@ -45,15 +43,6 @@ export const graphqlRoot: Resolvers<Context> = {
     allLikes: () => Like.find(),
   },
   Mutation: {
-    signUp: async (_, { email, firstName, lastName, password }: MutationSignUpArgs, ctx: Context) => {
-      const newUser = new User()
-      newUser.hashedPassword = await argon2.hash(password)
-      newUser.email = email
-      newUser.firstName = firstName
-      newUser.lastName = lastName
-      const resultUser = await newUser.save()
-      return resultUser
-    },
     addLike: async (_, { cafeId }: MutationAddLikeArgs, ctx: Context) => {
       if (!ctx.user) {
         throw new Error('No user detected.')

@@ -17,7 +17,7 @@ const title = {
   title: true,
 }
 
-const otherTabs = [
+let otherTabs = [
   // {
   //   name: 'lectures',
   //   path: getPath(Route.LECTURES),
@@ -40,7 +40,8 @@ export function NavBar() {
   const { user } = useContext(UserContext)
 
   if (user) {
-    otherTabs[2].name = `profile (${user.firstName})`
+    const newName = `profile (${user.firstName})`
+    otherTabs = otherTabs.map((tb) => tb.name === 'login' ? {...tb, name: newName} : tb)
   }
 
   function onToast(feedback: Toast) {

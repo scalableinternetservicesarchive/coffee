@@ -36,12 +36,14 @@ export function Login(props: LoginProps) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     })
-      .then(res => {
-        check(res.ok, 'response status ' + res.status)
+      .then(async res => {
+        const resObj = await res.json()
+        check(res.ok, resObj.error ? resObj.error : 'response status ' + res.status)
         return res.text()
       })
       .then(() => props.onSuccessAuth ? props.onSuccessAuth() : window.location.reload())
       .catch(err => {
+        console.log(err)
         toastErr(err.toString())
         setError({ email: true, password: true })
       })
@@ -60,8 +62,22 @@ export function Login(props: LoginProps) {
       toastErr('empty last name')
       return
     }
-    // TODO do signup function here
-    // TODO: use props.onSuccessAuth
+    fetch('/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, firstName, lastName, password }),
+    })
+      .then(async res => {
+        const resObj = await res.json()
+        check(res.ok, resObj.error ? resObj.error : 'response status ' + res.status)
+        return res.text()
+      })
+      .then(() => props.onSuccessAuth ? props.onSuccessAuth() : window.location.reload())
+      .catch(err => {
+        console.log(err)
+        toastErr(err.toString())
+        setError({ email: true, password: true })
+      })
     //
   }
 

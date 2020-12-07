@@ -58,7 +58,6 @@ export interface Mutation {
   __typename?: 'Mutation'
   answerSurvey: Scalars['Boolean']
   nextSurveyQuestion?: Maybe<Survey>
-  signUp: User
   addLike?: Maybe<Like>
   deleteLikeById: Scalars['Boolean']
   addCafe: Cafe
@@ -71,13 +70,6 @@ export interface MutationAnswerSurveyArgs {
 
 export interface MutationNextSurveyQuestionArgs {
   surveyId: Scalars['Int']
-}
-
-export interface MutationSignUpArgs {
-  email: Scalars['String']
-  firstName: Scalars['String']
-  lastName: Scalars['String']
-  password: Scalars['String']
 }
 
 export interface MutationAddLikeArgs {
@@ -320,12 +312,6 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationNextSurveyQuestionArgs, 'surveyId'>
-  >
-  signUp?: Resolver<
-    ResolversTypes['User'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationSignUpArgs, 'email' | 'firstName' | 'lastName' | 'password'>
   >
   addLike?: Resolver<
     Maybe<ResolversTypes['Like']>,

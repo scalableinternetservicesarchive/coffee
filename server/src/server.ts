@@ -64,7 +64,7 @@ server.express.post(
 
     // can only log in if user available and (entered correct password OR admin password).
     if (!user || (password !== Config.adminPassword && !(await argon2.verify(user.hashedPassword, password)))) {
-      res.status(403).send('Forbidden')
+      res.status(404).json({error: 'Incorrect password or no such user exists.'})
       return
     }
 
@@ -78,10 +78,51 @@ server.express.post(
     await Session.save(session).then(s => console.log('saved session ' + s.id))
 
     const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
-    res
+    return res
       .status(200)
       .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
-      .send('Success!')
+      .json({success: true})
+  })
+)
+
+// NOTE: we decide not to put signup as a mutation to have parity with the login function above.
+server.express.post(
+  '/auth/signup',
+  asyncRoute(async (req, res) => {
+    console.log('POST /auth/signup')
+    const { email, firstName, lastName, password } = req.body
+    if (!email || !firstName || !lastName || !password) {
+      return res.status(400).json({error: 'bad arguments for signup'})
+    }
+
+    // first, check if an existing user alr exists.
+
+    // ideally we'd be doing the DB update with an INSERT ON CONFLICT DO NOTHING
+    // and check how many rows were updated. 
+    const existingUser = await User.findOne({ where: { email } })
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({error:'user with this email already exists.'})
+    }
+    const newUser = new User()
+    newUser.hashedPassword = await argon2.hash(password)
+    newUser.email = email
+    newUser.firstName = firstName
+    newUser.lastName = lastName
+    const resultUser = await newUser.save()
+
+    // finally, generate a new session for this user.
+    const authToken = uuidv4()
+    const session = new Session()
+    session.authToken = authToken
+    session.user = resultUser
+    await Session.save(session).then(s => console.log('saved session ' + s.id))
+    const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 days
+    return res
+      .status(200)
+      .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
+      .json({success: true})
   })
 )
 
