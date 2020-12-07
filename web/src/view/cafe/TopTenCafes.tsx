@@ -1,9 +1,7 @@
 import { useQuery } from '@apollo/client'
 import * as React from 'react'
-import { GetTopTenCafes } from '../../graphql/query.gen'
-import { Button } from '../../style/button'
-import { H1, H2, H3 } from '../../style/header'
-import { Spacer } from '../../style/spacer'
+import { GetTopTenCafesNearMe, GetTopTenCafesNearMe_getTopTenCafes } from '../../graphql/query.gen'
+import { H3 } from '../../style/header'
 import { BodyText } from '../../style/text'
 import { fetchTopTenCafesNearMe } from './fetchData'
 import { addLike } from './mutateData'
@@ -34,8 +32,8 @@ export function TopTenCafes () {
   }
   return (
     <div>
-      {data.getTopTenCafes.map((s, i) => (
-        <div key={i} style={{ margin: '10px 0' }}>
+      {data.getTopTenCafes.map((s: GetTopTenCafesNearMe_getTopTenCafes) => (
+        <div key={s.id} style={{ margin: '10px 0' }}>
           <H3>
             {s.name} <span onClick={() => handleLike(s.id)}>♡</span>
           </H3>
