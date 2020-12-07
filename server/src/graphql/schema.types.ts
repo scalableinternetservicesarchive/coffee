@@ -19,6 +19,7 @@ export interface Query {
   survey?: Maybe<Survey>
   cafes: Array<Cafe>
   likes: Array<Like>
+  menus: Array<Menu>
   allLikes: Array<Like>
   getTopTenCafes: Array<Cafe>
   getLikedCafes: Array<Cafe>
@@ -81,6 +82,7 @@ export interface Mutation {
   addLike?: Maybe<Like>
   deleteLikeById: Scalars['Boolean']
   addCafe: Cafe
+  addMenu: Menu
   getAllCafes?: Maybe<Array<Maybe<Cafe>>>
 }
 
@@ -104,6 +106,11 @@ export interface MutationAddCafeArgs {
   name: Scalars['String']
   long: Scalars['Float']
   lat: Scalars['Float']
+}
+
+export interface MutationAddMenuArgs {
+  cafeId: Scalars['Int']
+  item: Scalars['String']
 }
 
 export interface MutationGetAllCafesArgs {
@@ -283,6 +290,7 @@ export type QueryResolvers<
   >
   cafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
   likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType, RequireFields<QueryLikesArgs, 'userId'>>
+  menus?: Resolver<Array<ResolversTypes['Menu']>, ParentType, ContextType>
   allLikes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType>
   getTopTenCafes?: Resolver<
     Array<ResolversTypes['Cafe']>,
@@ -376,6 +384,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationAddCafeArgs, 'name' | 'long' | 'lat'>
+  >
+  addMenu?: Resolver<
+    ResolversTypes['Menu'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddMenuArgs, 'cafeId' | 'item'>
   >
   getAllCafes?: Resolver<
     Maybe<Array<Maybe<ResolversTypes['Cafe']>>>,

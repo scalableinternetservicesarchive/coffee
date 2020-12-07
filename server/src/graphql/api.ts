@@ -15,8 +15,12 @@ import { User } from '../entities/User'
 import {
   MutationAddCafeArgs,
   MutationAddLikeArgs,
+
+
+  MutationAddMenuArgs,
   MutationDeleteLikeByIdArgs,
   MutationGetAllCafesArgs,
+
   Resolvers
 } from './schema.types'
 
@@ -131,6 +135,17 @@ export const graphqlRoot: Resolvers<Context> = {
 
       return res.raw.affectedRows === 1
     },
+
+    addMenu: async (_, {cafeId, item}: MutationAddMenuArgs) =>{
+      const c = new Menu()
+      //c.id = cafeId
+      c.cafeId = cafeId
+      c.menuDescription = item
+
+      const newMenu = await c.save()
+      return newMenu
+    },
+
     addCafe: async (_, { name, long, lat }: MutationAddCafeArgs) => {
       const c = new Cafe()
       c.name = name

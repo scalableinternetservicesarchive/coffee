@@ -5,7 +5,8 @@ import { Cafe } from './Cafe'
 export class Menu extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
-
+  @Column({ nullable: false })
+  cafeId: number
   @OneToOne(() => Cafe)
   @JoinColumn()
   cafe: Cafe

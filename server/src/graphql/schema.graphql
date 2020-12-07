@@ -27,6 +27,10 @@ type Query {
   # Returns a list of likes for a specific user
   likes (userId: Int!): [Like!]!
 
+  # Return a list of menus in database
+
+  menus: [Menu!]!
+
   # Returns a list of all likes
   allLikes: [Like!]!
 
@@ -114,6 +118,9 @@ type Mutation {
 
   # adds a cafe
   addCafe (name: String!, long: Float!, lat: Float!): Cafe!
+
+  # adds menus
+  addMenu(cafeId: Int!, item: String!): Menu!
 
   # get all cafes
   getAllCafes (cafeId: Int!): [Cafe]
