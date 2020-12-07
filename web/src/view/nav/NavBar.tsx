@@ -1,6 +1,6 @@
 import { useLocation } from '@reach/router'
 import * as React from 'react'
-import { useEffect, useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { useMediaQuery } from 'react-responsive'
 import { breakpoints } from '../../style/breakpoints'
@@ -17,18 +17,18 @@ const title = {
   title: true,
 }
 
-let otherTabs = [
-  {
-    name: 'lectures',
-    path: getPath(Route.LECTURES),
-  },
-  {
-    name: 'projects',
-    path: getPath(Route.PROJECTS),
-  },
+const otherTabs = [
+  // {
+  //   name: 'lectures',
+  //   path: getPath(Route.LECTURES),
+  // },
+  // {
+  //   name: 'projects',
+  //   path: getPath(Route.PROJECTS),
+  // },
   {
     name: 'login',
-    path:  getLoginPath(),
+    path: getLoginPath(),
   },
 ]
 
@@ -40,7 +40,7 @@ export function NavBar() {
   const { user } = useContext(UserContext)
 
   if (user) {
-    otherTabs[2].name = `profile (${user.firstName})`;
+    otherTabs[2].name = `profile (${user.firstName})`
   }
 
   function onToast(feedback: Toast) {
@@ -62,7 +62,6 @@ export function NavBar() {
   }, [toast])
 
   const tabs = isSmall ? [otherTabs.find(t => location.pathname.startsWith(t.path)) || otherTabs[0]] : otherTabs
-
 
   return (
     <>
@@ -104,7 +103,6 @@ function NavMenu(props: { show: boolean; onClick: () => void }) {
     </NavMenuButton>
   )
 }
-
 
 const Nav = style(
   'nav',

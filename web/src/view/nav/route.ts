@@ -6,11 +6,11 @@
  */
 export enum Route {
   HOME = 'app/index',
-  LECTURES = 'app/lectures',
-  PROJECTS = 'app/projects',
+  // LECTURES = 'app/lectures',
+  // PROJECTS = 'app/projects',
   LOGIN = 'app/login',
-  PLAYGROUND='DEPRECATE_THIS_PLS',
-  PLAYGROUND_APP='DEPRECATE_THIS'
+  PLAYGROUND = 'DEPRECATE_THIS_PLS',
+  PLAYGROUND_APP = 'DEPRECATE_THIS',
 }
 
 export enum PlaygroundApp {
@@ -25,7 +25,7 @@ export function getSurveyPath(surveyId?: number) {
 }
 
 export function getLoginPath() {
-  return getPath(Route.LOGIN);
+  return getPath(Route.LOGIN)
 }
 
 export function getPlaygroundPath() {
