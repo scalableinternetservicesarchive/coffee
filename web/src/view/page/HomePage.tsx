@@ -1,6 +1,7 @@
 import { RouteComponentProps } from '@reach/router'
 import * as React from 'react'
 import { ColorName, Colors } from '../../../../common/src/colors'
+import { metropolitanLocations } from '../../../../common/src/metropolitanLocations'
 import { H1, H2, H3 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { style } from '../../style/styled'
@@ -21,6 +22,7 @@ export function HomePage(props: HomePageProps) {
       <Hero>
         <H1>COFFEE</H1>
         <H3>discover cafes around the world</H3>
+        <H3> Available in {metropolitanLocations.map((x)=>x.name).join(', ')}!</H3>
       </Hero>
       <Content style={{ width: '900px' }}>
         <LContent>

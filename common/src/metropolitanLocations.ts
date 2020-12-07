@@ -20,6 +20,18 @@ export const metropolitanLocations = [
     long: 87.6298,
   },
   {
+    name: "Austin",
+    slug: "austin-tx",
+    lat: 30.2672,
+    long: 97.7431,
+  },
+  {
+    name: "Miami",
+    slug: "miami-fl",
+    lat: 25.7617,
+    long: 80.1918,
+  },
+  {
     name: "SF Bay Area",
     slug: "sf-bay-area",
     lat: 37.7749,

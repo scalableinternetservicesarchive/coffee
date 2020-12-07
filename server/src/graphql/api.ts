@@ -78,22 +78,34 @@ export const graphqlRoot: Resolvers<Context> = {
     getTopTenCafes: async (_, { lat, long }) => {
       // fetches the top ten cafes in the nearest metropolitan area of the person.
       // can do experiments here to vary the number of metropolitan areas when not using cache. 
+      // default radius: 60mi
       const fetchTopTenCafes = async (lat: number, long: number) => {
-        // TODO: do haversine distance when michael figures it out, OR:
-        // https://www.databasejournal.com/features/mysql/mysql-calculating-distance-based-on-latitude-and-longitude.html
-        return getConnection()
-          .createQueryBuilder()
-          .addSelect('COUNT(1)', 'totalLikes')
-          .addSelect('cafe.name', 'name')
-          .addSelect('latitude')
-          .addSelect('longitude')
-          .addSelect('cafe.id', 'id')
-          .from(Cafe, 'cafe')
-          .innerJoin('cafe.likes', 'like')
-          .groupBy('cafe.id')
-          .orderBy({ totalLikes: 'DESC' })
-          .limit(10)
-          .getRawMany() // use getRawMany since totalLikes isnt part of the entity, and is processed aggregated data.
+        // we use the haversine formula, as shown in 
+        // https://www.plumislandmedia.net/mysql/stored-function-haversine-distance-computation/
+        // the haversine function haversineMiles is defined in the db migration sql files
+         const res = await getConnection()
+        .query(`
+          SELECT
+            nearbyCafes.name,
+            nearbyCafes.latitude,
+            nearbyCafes.longitude,
+            nearbyCafes.id,
+            COUNT(1) AS totalLikes
+          FROM (
+            SELECT
+              cafe.name as name,
+              cafe.latitude as latitude,
+              cafe.longitude as longitude,
+              cafe.id as id
+            FROM cafe
+            WHERE ROUND(haversineMiles(cafe.latitude, cafe.longitude, ?, ?), 3) <= 60
+          ) nearbyCafes
+          INNER JOIN \`like\` l ON l.cafeId = nearbyCafes.id
+          GROUP BY nearbyCafes.id
+          ORDER BY totalLikes DESC
+          LIMIT 10;
+         `, [lat, long, lat, long])
+         return res
       };
       // first, get the nearest metropolitan location.
       const nearestMetroArea = getNearestMetroLocation(lat, long)
