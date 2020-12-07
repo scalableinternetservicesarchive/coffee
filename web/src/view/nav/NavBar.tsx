@@ -1,6 +1,6 @@
 import { useLocation } from '@reach/router'
 import * as React from 'react'
-import { useContext, useEffect } from 'react'
+import { useEffect, useContext } from 'react'
 import ReactDOM from 'react-dom'
 import { useMediaQuery } from 'react-responsive'
 import { breakpoints } from '../../style/breakpoints'
@@ -9,7 +9,7 @@ import { style } from '../../style/styled'
 import { UserContext } from '../auth/user'
 import { addToastListener, removeToastListener, Toast, ToastType } from '../toast/toast'
 import { link } from './Link'
-import { getLoginPath, getPath, getSurveyPath, Route } from './route'
+import { getLoginPath, getPath, Route } from './route'
 
 const title = {
   name: 'COFFEE',
@@ -17,7 +17,7 @@ const title = {
   title: true,
 }
 
-const otherTabs = [
+let otherTabs = [
   {
     name: 'lectures',
     path: getPath(Route.LECTURES),
@@ -27,8 +27,8 @@ const otherTabs = [
     path: getPath(Route.PROJECTS),
   },
   {
-    name: 'playground',
-    path: getPath(Route.PLAYGROUND),
+    name: 'login',
+    path:  getLoginPath(),
   },
 ]
 
@@ -37,6 +37,11 @@ export function NavBar() {
   const isSmall = useMediaQuery(breakpoints.small)
   const [showMenu, setShowMenu] = React.useState(false)
   const [toast, setToast] = React.useState<Toast | null>(null)
+  const { user } = useContext(UserContext)
+
+  if (user) {
+    otherTabs[2].name = `profile (${user.firstName})`;
+  }
 
   function onToast(feedback: Toast) {
     setToast(feedback)
@@ -58,6 +63,7 @@ export function NavBar() {
 
   const tabs = isSmall ? [otherTabs.find(t => location.pathname.startsWith(t.path)) || otherTabs[0]] : otherTabs
 
+
   return (
     <>
       <div className="fixed top-0 left-0 w-100 avenir">
@@ -76,7 +82,6 @@ export function NavBar() {
 
           {isSmall && <NavMenu show={showMenu} onClick={() => setShowMenu(!showMenu)} />}
         </Nav>
-        <SubNav />
       </div>
       {toast && <ToastContainer $isError={toast.type === ToastType.ERROR}>{toast.message}</ToastContainer>}
     </>
@@ -100,20 +105,6 @@ function NavMenu(props: { show: boolean; onClick: () => void }) {
   )
 }
 
-function SubNav() {
-  const location = useLocation()
-  const { user } = useContext(UserContext)
-  if (!location.pathname.startsWith(getPath(Route.PLAYGROUND))) {
-    // only playground has subnav
-    return null
-  }
-  return (
-    <Nav $isSubNav>
-      <NavItem name="surveys" path={getSurveyPath()} />
-      <NavItem name={user ? 'logout' : 'login'} path={getLoginPath()} />
-    </Nav>
-  )
-}
 
 const Nav = style(
   'nav',

@@ -8,8 +8,9 @@ export enum Route {
   HOME = 'app/index',
   LECTURES = 'app/lectures',
   PROJECTS = 'app/projects',
-  PLAYGROUND = 'app/playground',
-  PLAYGROUND_APP = 'app/playground/:app',
+  LOGIN = 'app/login',
+  PLAYGROUND='DEPRECATE_THIS_PLS',
+  PLAYGROUND_APP='DEPRECATE_THIS'
 }
 
 export enum PlaygroundApp {
@@ -18,12 +19,13 @@ export enum PlaygroundApp {
 }
 
 export function getSurveyPath(surveyId?: number) {
-  const path = getPath(Route.PLAYGROUND_APP, { app: PlaygroundApp.SURVEYS })
-  return path + (surveyId ? `?surveyId=${surveyId}` : '')
+  return 'DEPRECATE THIS'
+  //const path = getPath(Route.PLAYGROUND_APP, { app: PlaygroundApp.SURVEYS })
+  //return path + (surveyId ? `?surveyId=${surveyId}` : '')
 }
 
 export function getLoginPath() {
-  return getPath(Route.PLAYGROUND_APP, { app: PlaygroundApp.LOGIN })
+  return getPath(Route.LOGIN);
 }
 
 export function getPlaygroundPath() {

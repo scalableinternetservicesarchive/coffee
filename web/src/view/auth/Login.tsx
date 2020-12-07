@@ -8,9 +8,16 @@ import { handleError } from '../toast/error'
 import { toastErr } from '../toast/toast'
 import { UserContext } from './user'
 
-export function Login() {
+interface LoginProps {
+  onSuccessAuth?: () => void;
+}
+
+export function Login(props: LoginProps) {
   const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [password, setPassword] = useState('')
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const [err, setError] = useState({ email: false, password: false })
   const { user } = useContext(UserContext)
 
@@ -33,36 +40,101 @@ export function Login() {
         check(res.ok, 'response status ' + res.status)
         return res.text()
       })
-      .then(() => window.location.reload())
+      .then(() => props.onSuccessAuth ? props.onSuccessAuth() : window.location.reload())
       .catch(err => {
         toastErr(err.toString())
         setError({ email: true, password: true })
       })
   }
 
-  if (user) {
-    return <Logout />
+  function signup() {
+    if(!validate(email, password, setError)) {
+      toastErr('invalid email/password')
+      return
+    }
+    if(firstName.length === 0) {
+      toastErr('empty first name')
+      return
+    }
+    if(lastName.length === 0) {
+      toastErr('empty last name')
+      return
+    }
+    // TODO do signup function here
+    // TODO: use props.onSuccessAuth
+    //
   }
 
-  return (
+  if (user) {
+    return (
     <>
       <div className="mt3">
-        <label className="db fw4 lh-copy f6" htmlFor="email">
-          Email address
-        </label>
-        <Input $hasError={err.email} $onChange={setEmail} $onSubmit={login} name="email" type="email" />
+         Hello {user.firstName}. How are you doing today?
       </div>
-      <div className="mt3">
-        <label className="db fw4 lh-copy f6" htmlFor="password">
-          Password
-        </label>
-        <Input $hasError={err.password} $onChange={setPassword} $onSubmit={login} name="password" type="password" />
-      </div>
-      <div className="mt3">
-        <Button onClick={login}>Sign Up</Button>
-      </div>
+      <Logout />
     </>
-  )
+    )
+  }
+  if (isSigningUp) {
+    return (
+      <>
+        <div className="mt3">
+          <label className="db fw4 lh-copy f6" htmlFor="email">
+            Email address
+          </label>
+          <Input $hasError={err.email} $onChange={setEmail} $onSubmit={signup} name="email" type="email" />
+        </div>
+        <div className="mt3">
+          <label className="db fw4 lh-copy f6" htmlFor="firstName">
+            First name
+          </label>
+          <Input $hasError={firstName.length === 0} $onChange={setFirstName} $onSubmit={signup} name="firstName" type="text" />
+        </div>
+        <div className="mt3">
+          <label className="db fw4 lh-copy f6" htmlFor="lastName">
+            Last name
+          </label>
+          <Input $hasError={lastName.length === 0 } $onChange={setLastName} $onSubmit={signup} name="lastName" type="text" />
+        </div>
+        <div className="mt3">
+          <label className="db fw4 lh-copy f6" htmlFor="password">
+            Password
+          </label>
+          <Input $hasError={err.password} $onChange={setPassword} $onSubmit={signup} name="password" type="password" />
+        </div>
+        <div className="mt3">
+          <Button onClick={signup}>Sign Up</Button>
+        </div>
+        <div className="mt3">
+          Already have an account? Click <a style={{ 'cursor': 'pointer', color: 'blue'}} onClick={() => setIsSigningUp(false)}> Here </a> to log in.
+        </div>
+      </>
+    )
+  } else {
+    return (
+      <>
+        <div className="mt3">
+          <label className="db fw4 lh-copy f6" htmlFor="email">
+            Email address
+          </label>
+          <Input $hasError={err.email} $onChange={setEmail} $onSubmit={login} name="email" type="email" />
+        </div>
+        <div className="mt3">
+          <label className="db fw4 lh-copy f6" htmlFor="password">
+            Password
+          </label>
+          <Input $hasError={err.password} $onChange={setPassword} $onSubmit={login} name="password" type="password" />
+        </div>
+        <div className="mt3">
+          <Button onClick={login}>Log in</Button>
+        </div>
+        <div className="mt3">
+          First time here? Click <a style={{ 'cursor': 'pointer', color: 'blue'}} onClick={() => setIsSigningUp(true)}> Here </a> to create an account!
+        </div>
+      </>
+    )
+  }
+
 }
 
 function Logout() {
