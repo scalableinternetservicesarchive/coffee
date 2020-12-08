@@ -63,9 +63,25 @@ export default function (data) {
     http.post(
       'http://localhost:3000/graphql',
       // loadtest AddCafe
+      '{operationName: "AddCafe", variables: {name: "test cafe", long: 90, lat: 123},…}',
+      /*
+      //view top 10 cafes
+      '{operationName: "GetTopTenCafesNearMe", variables: {lat: 34.06, long: -118.23},…}',
+
+      //add menu
+      'operationName: "addMenu", variables:{cafdId: 1, menuDescription: "my menu"}',
+
       //'{"operationName":"AddCafe","variables":{"name":"asdaasda","long":412,"lat":231},"query":"mutation AddCafe($name: String!, $long: Float!, $lat: Float!) {\n  addCafe(name: $name, long: $long, lat: $lat) {\n    id\n    __typename\n  }\n}\n"}',
-      // loadtest AddLike
+      // loadtest AddLike 5 times
       '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
+      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
+      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
+      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
+      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
+
+      // view top 10 cafes
+      '{operationName: "GetTopTenCafesNearMe", variables: {lat: 34.06, long: -118.23},…}',
+      */
       // loadtest FetchCafes
 //{"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
       {
@@ -73,7 +89,32 @@ export default function (data) {
           'Content-Type': 'application/json',
         },
       }
-    )
+    ),
+    http.post(
+      'http://localhost:3000/graphql',
+      //view top 10 cafes
+      '{operationName: "GetTopTenCafesNearMe", variables: {lat: 34.06, long: -118.23},…}',
+      {"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ),
+
+    http.post(
+      'http://localhost:3000/graphql',
+      //add menu
+      'operationName: "addMenu", variables:{cafdId: 1, menuDescription: "my menu"}',
+      {"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ),
+
+
   )
 }
 
