@@ -3,7 +3,9 @@
  */
 
  html,
- body,
+ body {
+   background-color: wheat;
+ }
  ol,
  ul,
  li,
