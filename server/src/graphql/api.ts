@@ -190,6 +190,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
 
     addCafe: async (_, { name, long, lat }: MutationAddCafeArgs) => {
+      console.log("addCafe called", )
       const c = new Cafe()
       c.name = name
       c.longitude = long

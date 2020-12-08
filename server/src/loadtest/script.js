@@ -52,16 +52,40 @@ export function setup () {
  return  {users, metropolitanLocations, probNewUser };
 }
 
+function doHttpCall(endpoint, payloadObj, authToken) {
+  const k6Params = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+  if (authToken) {
+    k6Params.headers['x-authtoken'] = authToken
+  }
+  return recordRates(
+    http.post(
+      'http://localhost:3000' + endpoint,
+      JSON.stringify(payloadObj),
+      k6Params
+    )
+  )
+}
+
+function doGqlCall(operationName, query, variables={}, authToken) {
+  return doHttpCall('/graphql', { operationName, query, variables }, authToken)
+}
+
+function getRandomCoordDelta() {
+  return (0.1) * (Math.random() * 2 - 1)
+}
+
 export default function (data) {
   // first things first. Assign the VU to an actual user in the DB with an actual metropolitan location
   // can get user.id, user.firstName, user.lastName, etc.
   const user = sampleFromArray(data.users)
   // can get myLocation.long, myLocation.lat
   const myLocation = sampleFromArray(data.metropolitanLocations)
-  const latDelta = (0.1) * (Math.random() * 2 - 1)
-  const longDelta = (0.1) * (Math.random() * 2 - 1)
-  myLocation.lat += latDelta
-  myLocation.long += longDelta
+  myLocation.lat += getRandomCoordDelta()
+  myLocation.long += getRandomCoordDelta()
 
   //console.log("USER", JSON.stringify(user), JSON.stringify(myLocation))
   // First, they visit the site.
@@ -71,85 +95,74 @@ export default function (data) {
   let authRes;
   if (getBernoulliBool(data.probNewUser)) {
     user.email = `${user.firstName}.${user.lastName}-new-email-${crypto.randomBytes(1)[0]}@gmail.com`
-    authRes = recordRates(http.post(
-      'http://localhost:3000/auth/signup',
-      JSON.stringify({password: user.firstName + user.lastName, firstName: user.firstName, lastName: user.lastName, email: user.email}),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    ))
+    authRes = doHttpCall('/auth/signup',
+      {password: user.firstName + user.lastName, firstName: user.firstName, lastName: user.lastName, email: user.email},
+    )
+    const resBody = JSON.parse(authRes.body)
+    user.id = resBody.id
   } else {
-    authRes = recordRates(http.post(
-      'http://localhost:3000/auth/login',
-      JSON.stringify({password: user.firstName + user.lastName, email: user.email}),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    ))
+    authRes = doHttpCall('/auth/login', {password: user.firstName + user.lastName, email: user.email})
   }
   // we use this authToken to authenticate further requests
   const authToken = authRes.cookies.authToken[0].value
 
-  const gqlRes = recordRates(
-    http.post(
-      'http://localhost:3000/graphql',
-      // loadtest AddCafe
-      '{operationName: "AddCafe", variables: {name: "test cafe", long: 90, lat: 123},…}',
-      /*
-      //view top 10 cafes
-      '{operationName: "GetTopTenCafesNearMe", variables: {lat: 34.06, long: -118.23},…}',
-
-      //add menu
-      'operationName: "addMenu", variables:{cafdId: 1, menuDescription: "my menu"}',
-
-      //'{"operationName":"AddCafe","variables":{"name":"asdaasda","long":412,"lat":231},"query":"mutation AddCafe($name: String!, $long: Float!, $lat: Float!) {\n  addCafe(name: $name, long: $long, lat: $lat) {\n    id\n    __typename\n  }\n}\n"}',
-      // loadtest AddLike 5 times
-      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
-      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
-      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
-      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
-      '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
-
-      // view top 10 cafes
-      '{operationName: "GetTopTenCafesNearMe", variables: {lat: 34.06, long: -118.23},…}',
-      */
-      // loadtest FetchCafes
-//{"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+  const addCafeRes = doGqlCall('addCafe', `
+    mutation addCafe($name: String!, $long: Float!, $lat: Float!) {
+      addCafe(name: $name, long: $long, lat: $lat) {
+        id
       }
-    )
-  )
-  recordRates(
-    http.post(
-      'http://localhost:3000/graphql',
-      //view top 10 cafes
-      JSON.stringify({"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"}),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    }
+  `,
+  {
+    name: `${user.firstName}-${user.lastName}-cafe-${crypto.randomBytes(1)}`, 
+    long: myLocation.long + getRandomCoordDelta(),
+    lat: myLocation.lat + getRandomCoordDelta(),
+  }, authToken)
+
+  const getTopTenCafeRes = doGqlCall('getTopTenCafes', `
+    query getTopTenCafes($lat: Float!, $long: Float!) {
+      getTopTenCafes(lat: $lat, long: $long){
+        id
+        name
+        totalLikes
+        latitude
+        longitude
       }
-    )
-  )
-  recordRates(
-    http.post(
-      'http://localhost:3000/graphql',
-      //add menu
-      JSON.stringify({"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"}),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    }
+  `,
+  {
+    long: myLocation.long,
+    lat: myLocation.lat,
+  }, authToken)
+
+  const getNearbyCafeRes = doGqlCall('getNearbyCafes', `
+    query getNearbyCafes($lat: Float!, $long: Float!, $numResults: Int) {
+      getNearbyCafes(lat: $lat, long: $long, numResults: $numResults){
+        id
+        name
+        totalLikes
+        latitude
+        longitude
       }
-    )
-  )
+    }
+  `,
+  {
+    long: myLocation.long,
+    lat: myLocation.lat,
+    numResults: 20,
+  }, authToken)
+
+  const getLikedCafesRes = doGqlCall('getLikedCafes', `
+    query getLikedCafes {
+      getLikedCafes{
+        id
+        name
+      }
+    }
+  `,
+  {}, authToken)
+  // TODO: add a menu to a random cafe.
+ 
 }
 
 
