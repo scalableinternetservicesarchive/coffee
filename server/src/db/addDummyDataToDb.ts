@@ -39,6 +39,14 @@ const main = async () => {
     console.error("ERROR: number of likes per user > number of cafes");
     process.exit(1);
   }
+  // warning - use with care.
+  if (process.env.DELETE_EXISTING === 'yes' && process.env.NODE_ENV !== 'production') {
+    console.log("Deleting existing data in the db... I hope you know what you're doing...")
+    await dbConnection.query(`DELETE FROM \`session\` WHERE 1=1;`)
+    await dbConnection.query(`DELETE FROM \`like\` WHERE 1=1;`)
+    await dbConnection.query(`DELETE FROM \`cafe\` WHERE 1=1;`)
+    await dbConnection.query(`DELETE FROM \`user\` WHERE 1=1;`)
+  }
 
   const cafesToAdd = [];
   console.log(`Adding ${numCafes} cafes in total..`)
@@ -70,7 +78,9 @@ const main = async () => {
   console.log(`Adding ${numUsers} users..`);
   const usersToAdd = [];
   for (let i = 0; i < numUsers; i++) {
-    console.log("ADDED USER", i)
+    if (i === numUsers - 1  || (i % 10 === 0 && i > 0)) {
+      console.log(`Added ${i}th user`)
+    }
     const user = {
       hashedPassword: '',
       firstName: faker.fake("{{name.firstName}}"),
