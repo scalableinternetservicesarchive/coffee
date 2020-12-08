@@ -68,7 +68,6 @@ const main = async () => {
 
 
   console.log(`Adding ${numUsers} users..`);
-  //const hashedPassword = await argon2.hash("password123");
   const usersToAdd = [];
   for (let i = 0; i < numUsers; i++) {
     console.log("ADDED USER", i)

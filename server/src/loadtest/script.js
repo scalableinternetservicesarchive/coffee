@@ -1,8 +1,7 @@
 import http from 'k6/http'
 import { sleep } from 'k6'
 import { Counter, Rate } from 'k6/metrics'
-//CAN"T DO MYSQL
-//import mysql from 'mysql2'
+import crypto from 'k6/crypto'
 
 // export const options = {
 //   scenarios: {
@@ -29,6 +28,8 @@ export const options = {
   },
 }
 
+// some constants we can set for the loadtest
+const probNewUser = 0.4  // 40% of the VUs will be signing up
 
 function getRandomInt(max) {
   // uniformly distributed over 0 to (max - 1).
@@ -38,17 +39,23 @@ function sampleFromArray(array) {
   return array[getRandomInt(array.length)]
 }
 
+// true or False with p(true ) = p
+function getBernoulliBool(p) {
+  return Math.random() < p
+}
+
 const users = JSON.parse(open('./users.json'))
 const metropolitanLocations = JSON.parse(open('./metropolitanLocations.json'))
 
 export function setup () {
   // we'll have to export the stuff by ourselves.
- return  {users, metropolitanLocations};
+ return  {users, metropolitanLocations, probNewUser };
 }
 
 export default function (data) {
+  // first things first. Assign the VU to an actual user in the DB with an actual metropolitan location
   // can get user.id, user.firstName, user.lastName, etc.
-  const user = sampleFromArray(data.users)
+  let user = sampleFromArray(data.users)
   // can get myLocation.long, myLocation.lat 
   const myLocation = sampleFromArray(data.metropolitanLocations)
   const latDelta = (0.1) * (Math.random() * 2 - 1)
@@ -56,10 +63,38 @@ export default function (data) {
   myLocation.lat += latDelta
   myLocation.long += longDelta
 
-  console.log("USER", JSON.stringify(user), JSON.stringify(myLocation))
+  //console.log("USER", JSON.stringify(user), JSON.stringify(myLocation))
+  // First, they visit the site.
   recordRates(http.get('http://localhost:3000/app/index'))
   sleep(Math.random() * 3)
-  const signupRes = recordRates(
+
+  let authRes;
+  if (getBernoulliBool(data.probNewUser)) {
+    user.email = `${user.firstName}.${user.lastName}-new-email-${crypto.randomBytes(1)[0]}@gmail.com`
+    authRes = recordRates(http.post(
+      'http://localhost:3000/auth/signup',
+      JSON.stringify({password: user.firstName + user.lastName, firstName: user.firstName, lastName: user.lastName, email: user.email}),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ))
+  } else {
+    authRes = recordRates(http.post(
+      'http://localhost:3000/auth/login',
+      JSON.stringify({password: user.firstName + user.lastName, email: user.email}),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ))
+  }
+  // we use this authToken to authenticate further requests
+  const authToken = authRes.cookies.authToken[0].value
+
+  const gqlRes = recordRates(
     http.post(
       'http://localhost:3000/graphql',
       // loadtest AddCafe
@@ -89,32 +124,31 @@ export default function (data) {
           'Content-Type': 'application/json',
         },
       }
-    ),
+    )
+  )
+  recordRates(
     http.post(
       'http://localhost:3000/graphql',
       //view top 10 cafes
-      '{operationName: "GetTopTenCafesNearMe", variables: {lat: 34.06, long: -118.23},…}',
-      {"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
+      JSON.stringify({"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"}),
       {
         headers: {
           'Content-Type': 'application/json',
         },
       }
-    ),
-
+    )
+  )
+  recordRates(
     http.post(
       'http://localhost:3000/graphql',
       //add menu
-      'operationName: "addMenu", variables:{cafdId: 1, menuDescription: "my menu"}',
-      {"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
+      JSON.stringify({"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"}),
       {
         headers: {
           'Content-Type': 'application/json',
         },
       }
-    ),
-
-
+    )
   )
 }
 

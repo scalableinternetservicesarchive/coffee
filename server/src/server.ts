@@ -81,7 +81,7 @@ server.express.post(
     return res
       .status(200)
       .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
-      .json({success: true})
+      .json({success: true, id: user.id })
   })
 )
 
@@ -122,7 +122,7 @@ server.express.post(
     return res
       .status(200)
       .cookie('authToken', authToken, { maxAge: SESSION_DURATION, path: '/', httpOnly: true, secure: Config.isProd })
-      .json({success: true})
+      .json({success: true, id: resultUser.id})
   })
 )
 
