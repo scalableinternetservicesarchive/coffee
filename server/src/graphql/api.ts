@@ -75,6 +75,24 @@ export const graphqlRoot: Resolvers<Context> = {
         .where('like.userId = :userId', { userId: ctx.user.id })
         .getRawMany()
     },
+    getNearbyCafes: async (_, { lat, long, numResults }) => {
+      // TODO: possibly implement pagination later if we have time
+      const numRes = numResults || 10;
+       const res = await getConnection()
+      .query(`
+          SELECT
+            cafe.name as name,
+            cafe.latitude as latitude,
+            cafe.longitude as longitude,
+            cafe.id as id
+          FROM cafe
+          WHERE ROUND(haversineMiles(cafe.latitude, cafe.longitude, ?, ?), 3) <= 60
+          ORDER BY haversineMiles(cafe.latitude, cafe.longitude, ?, ?) ASC
+          LIMIT ?
+       `, [lat, long, lat, long, numRes ])
+       return res
+    },
+
     getTopTenCafes: async (_, { lat, long }) => {
       // fetches the top ten cafes in the nearest metropolitan area of the person.
       // can do experiments here to vary the number of metropolitan areas when not using cache. 

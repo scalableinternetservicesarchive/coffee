@@ -39,6 +39,9 @@ type Query {
   # get all cafes liked by user
   getLikedCafes: [Cafe!]!
 
+  # get all cafes (up to numResults, default 10) that is nearby the user
+  getNearbyCafes (lat: Float!, long: Float!, numResults: Int): [Cafe!]!
+
   # view menu for cafeId
   getMenuForCafeId (cafeId: Int!): Menu
 }
@@ -152,6 +155,7 @@ type Survey {
   # All the survey's questions, in presentation order.
   questions: [SurveyQuestion]!
 }
+
 
 type SurveyQuestion {
   id: Int!

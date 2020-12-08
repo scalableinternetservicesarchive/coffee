@@ -1,11 +1,13 @@
 import { useQuery } from '@apollo/client'
 import * as React from 'react'
-import { FetchCafes } from '../../graphql/query.gen'
-import { Button } from '../../style/button'
-import { H1, H2 } from '../../style/header'
+//import { FetchCafes } from '../../graphql/query.gen'
+import { FetchNearbyCafes } from '../../graphql/query.gen'
+//import { Button } from '../../style/button'
+import { H1, H3 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { BodyText } from '../../style/text'
-import { fetchCafes } from './fetchData'
+//import { fetchCafes, fetchNearbyCafes } from './fetchData'
+import { fetchNearbyCafes } from './fetchData'
 import { useContext } from 'react'
 import { UserContext } from '../auth/user'
 import { getHaversineDistanceMiles } from '../../../../common/src/haversine'
@@ -17,22 +19,24 @@ let myLat =  34.06;
 let myLong = 118.23;
 
 export function CafeList() {
-  const [showStuff, setShowStuff] = React.useState(false)
-
   return (
     <div>
-      <H1>All Cafes</H1>
+      <H1>Cafes near me </H1>
       <Spacer $h4 />
-      <Button onClick={() => setShowStuff(!showStuff)}>Show / Hide Cafes</Button>
-      <Spacer $h4 />
-      {showStuff && <FetchStuff />}
+      <FetchStuff/>
     </div>
   )
 }
 
 function FetchStuff() {
   const { user } = useContext(UserContext)
-  const { loading, data } = useQuery<FetchCafes>(fetchCafes)
+  const { loading, data } = useQuery<FetchNearbyCafes>(fetchNearbyCafes, {
+    variables: {
+      lat: myLat,
+      long: myLong,
+      numResults: 10,
+    }
+  })
 
   function handleLike(cafeId: number) {
     addLike(cafeId)
@@ -45,16 +49,16 @@ function FetchStuff() {
   if (loading) {
     return <div>loading...</div>
   }
-  if (!data || data.cafes.length === 0) {
-    return <div>no cafes</div>
+  if (!data || data.getNearbyCafes.length === 0) {
+    return <div>no cafes near me </div>
   }
   return (
     <div>
-      {data.cafes.map((s, i) => (
+      {data.getNearbyCafes.map((s, i) => (
         <div key={i} style={{ margin: '10px 0' }}>
-          <H2>
+          <H3>
             {s.name} { user && <span onClick={() => handleLike(s.id)}>♡</span> }
-          </H2>
+          </H3>
           <BodyText>
             {getHaversineDistanceMiles(s.latitude, s.longitude, myLat, myLong).toFixed(1)} mi away
           </BodyText>

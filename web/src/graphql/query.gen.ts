@@ -96,6 +96,33 @@ export interface GetLikedCafes {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchNearbyCafes
+// ====================================================
+
+export interface FetchNearbyCafes_getNearbyCafes {
+  __typename: "Cafe";
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface FetchNearbyCafes {
+  getNearbyCafes: FetchNearbyCafes_getNearbyCafes[];
+}
+
+export interface FetchNearbyCafesVariables {
+  lat: number;
+  long: number;
+  numResults?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetTopTenCafesNearMe
 // ====================================================
 

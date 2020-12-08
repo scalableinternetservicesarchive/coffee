@@ -23,6 +23,7 @@ export interface Query {
   allLikes: Array<Like>
   getTopTenCafes: Array<Cafe>
   getLikedCafes: Array<Cafe>
+  getNearbyCafes: Array<Cafe>
   getMenuForCafeId?: Maybe<Menu>
 }
 
@@ -37,6 +38,12 @@ export interface QueryLikesArgs {
 export interface QueryGetTopTenCafesArgs {
   lat: Scalars['Float']
   long: Scalars['Float']
+}
+
+export interface QueryGetNearbyCafesArgs {
+  lat: Scalars['Float']
+  long: Scalars['Float']
+  numResults?: Maybe<Scalars['Int']>
 }
 
 export interface QueryGetMenuForCafeIdArgs {
@@ -299,6 +306,12 @@ export type QueryResolvers<
     RequireFields<QueryGetTopTenCafesArgs, 'lat' | 'long'>
   >
   getLikedCafes?: Resolver<Array<ResolversTypes['Cafe']>, ParentType, ContextType>
+  getNearbyCafes?: Resolver<
+    Array<ResolversTypes['Cafe']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetNearbyCafesArgs, 'lat' | 'long'>
+  >
   getMenuForCafeId?: Resolver<
     Maybe<ResolversTypes['Menu']>,
     ParentType,

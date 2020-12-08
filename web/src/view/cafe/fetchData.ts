@@ -41,6 +41,16 @@ export const fetchLikedCafes = gql`
   
 `
 
+export const fetchNearbyCafes= gql`
+  query FetchNearbyCafes($lat: Float!, $long: Float!, $numResults: Int) {
+    getNearbyCafes(lat: $lat, long: $long, numResults: $numResults) {
+      id
+      name
+      latitude
+      longitude
+    }
+  }
+`
 export const fetchTopTenCafesNearMe = gql`
   query GetTopTenCafesNearMe($lat: Float!, $long: Float!) {
     getTopTenCafes(lat: $lat, long: $long){
