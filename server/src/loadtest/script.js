@@ -55,8 +55,8 @@ export function setup () {
 export default function (data) {
   // first things first. Assign the VU to an actual user in the DB with an actual metropolitan location
   // can get user.id, user.firstName, user.lastName, etc.
-  let user = sampleFromArray(data.users)
-  // can get myLocation.long, myLocation.lat 
+  const user = sampleFromArray(data.users)
+  // can get myLocation.long, myLocation.lat
   const myLocation = sampleFromArray(data.metropolitanLocations)
   const latDelta = (0.1) * (Math.random() * 2 - 1)
   const longDelta = (0.1) * (Math.random() * 2 - 1)
