@@ -10,6 +10,8 @@
  * To alter the numbers above, simply put them as environment variables, e.g:
  *
  * NUM_CAFE=10000 NUM_USER=100 NUM_LIKE_PER_USER=10 npm/yarn run addDummyData
+ *
+ * EVery person's password is their first name and last name, except for wilson's (which is in the sql migration script)
  */
 
 
@@ -20,6 +22,7 @@ import { Cafe } from '../entities/Cafe';
 import { User } from '../entities/User';
 import { metropolitanLocations } from '../../../common/src/metropolitanLocations'
 import { Like } from '../entities/Like';
+import { writeFileSync } from 'fs'
 
 const main = async () => {
   const dbConnection = await initORM();
@@ -65,15 +68,18 @@ const main = async () => {
 
 
   console.log(`Adding ${numUsers} users..`);
-  const hashedPassword = await argon2.hash("password123");
+  //const hashedPassword = await argon2.hash("password123");
   const usersToAdd = [];
   for (let i = 0; i < numUsers; i++) {
+    console.log("ADDED USER", i)
     const user = {
-      hashedPassword,
+      hashedPassword: '',
       firstName: faker.fake("{{name.firstName}}"),
       lastName: faker.fake("{{name.lastName}}"),
       email: faker.fake("{{internet.email}}"),
     };
+    const hashedPassword = await argon2.hash(user.firstName+ user.lastName);
+    user.hashedPassword = hashedPassword
     usersToAdd.push(user);
   }
 
@@ -90,7 +96,7 @@ const main = async () => {
   for(let i = 0; i < numUsers; i++) {
     const userId = userIdentifiers[i].id;
     let bucket: number[] = [];
-    for (let k=0;k<=numCafes;k++) {
+    for (let k = 0; k <= numCafes; k++) {
         bucket.push(k);
     }
     // sample one without replacement
@@ -115,6 +121,15 @@ const main = async () => {
     .into(Like)
     .values(likesToAdd) 
     .execute();
+  console.log("DONE");
+  console.log("Updating loadtest users.json file...")
+  const users = await dbConnection
+    .query('SELECT id, firstName, lastName, email FROM user')
+
+
+  const usersJsonPath = __dirname + '/../../../../src/loadtest/users.json'
+    // create new one
+  writeFileSync(usersJsonPath, JSON.stringify(users));
   console.log("DONE");
 }
 

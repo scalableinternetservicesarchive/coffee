@@ -1,5 +1,6 @@
 /* Put all the metropolitan locations that we're going to use to loadtest here */
 import { getHaversineDistanceMiles } from './haversine'
+import { writeFileSync } from 'fs'
 export const metropolitanLocations = [
   {
     name: "New York City",
@@ -39,6 +40,11 @@ export const metropolitanLocations = [
   },
   // NOTE: we can add more here to create more experiments.
 ]
+
+// this is for the loadtesting script. We need to create a json that can be read by the load testing script.
+// this is in the server/bin/common/src/ folder
+const metropolitanJsonPath = __dirname + '/../../../src/loadtest/metropolitanLocations.json'
+writeFileSync(metropolitanJsonPath, JSON.stringify(metropolitanLocations));
 
 export const getNearestMetroLocation = (lat: number, long: number) => {
   const metroAreaDistances = metropolitanLocations

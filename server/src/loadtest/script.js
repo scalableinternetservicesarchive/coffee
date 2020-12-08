@@ -1,6 +1,8 @@
 import http from 'k6/http'
 import { sleep } from 'k6'
 import { Counter, Rate } from 'k6/metrics'
+//CAN"T DO MYSQL
+//import mysql from 'mysql2'
 
 // export const options = {
 //   scenarios: {
@@ -20,16 +22,44 @@ export const options = {
   scenarios: {
     example_scenario: {
       executor: 'constant-vus',
-      vus: 1000,
+      //vus: 1000,
+      vus: 10, // temporary testing
       duration: '30s',
     },
   },
 }
 
-export default function () {
+
+function getRandomInt(max) {
+  // uniformly distributed over 0 to (max - 1).
+  return Math.floor(Math.random() * Math.floor(max))
+}
+function sampleFromArray(array) {
+  return array[getRandomInt(array.length)]
+}
+
+const users = JSON.parse(open('./users.json'))
+const metropolitanLocations = JSON.parse(open('./metropolitanLocations.json'))
+
+export function setup () {
+  // we'll have to export the stuff by ourselves.
+ return  {users, metropolitanLocations};
+}
+
+export default function (data) {
+  // can get user.id, user.firstName, user.lastName, etc.
+  const user = sampleFromArray(data.users)
+  // can get myLocation.long, myLocation.lat 
+  const myLocation = sampleFromArray(data.metropolitanLocations)
+  const latDelta = (0.1) * (Math.random() * 2 - 1)
+  const longDelta = (0.1) * (Math.random() * 2 - 1)
+  myLocation.lat += latDelta
+  myLocation.long += longDelta
+
+  console.log("USER", JSON.stringify(user), JSON.stringify(myLocation))
   recordRates(http.get('http://localhost:3000/app/index'))
   sleep(Math.random() * 3)
-  recordRates(
+  const signupRes = recordRates(
     http.post(
       'http://localhost:3000/graphql',
       // loadtest AddCafe
@@ -37,7 +67,7 @@ export default function () {
       // loadtest AddLike
       '{"operationName":"AddLike","variables":{"cafeId":2},"query":"mutation AddLike($cafeId: Int!) {\n  addLike(cafeId: $cafeId) {\n    id\n    __typename\n  }\n}\n"}',
       // loadtest FetchCafes
-      {"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
+//{"operationName":"FetchCafes","variables":{},"query":"query FetchCafes {\n  cafes {\n    ...Cafe\n    __typename\n  }\n}\n\nfragment Cafe on Cafe {\n  id\n  name\n  longitude\n  latitude\n  __typename\n}\n"},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -46,6 +76,7 @@ export default function () {
     )
   )
 }
+
 
 const count200 = new Counter('status_code_2xx')
 const count300 = new Counter('status_code_3xx')
@@ -72,4 +103,5 @@ function recordRates(res) {
     count500.add(1)
     rate500.add(1)
   }
+  return res
 }
