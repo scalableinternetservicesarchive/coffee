@@ -1,10 +1,14 @@
 # coffee
+The Coffee app is a web-based app that coffee aficionados can use to find specialty cafes within their vicinity. In addition, users can contribute to the app by adding cafe locations, as well as liking them to show other users which cafes in the area are popular. Also, users can see the full list of cafes within their region.
 
-Welcome to Cloud City!
+## Team Members
+| Wilson Jusuf |    Huy Le    |   Zhen Sun   |   Lucy Huo   | Michael Jung |
+| ------------ | ------------ |  ----------- |  ----------- | ------------ |
+| <img src="https://avatars1.githubusercontent.com/u/17305586?s=400&u=7e843fff18d2e2d1896b01a11241c504dfe03686&v=4" height=150px width=150px/> | <img src="https://avatars2.githubusercontent.com/u/61771011?s=400&u=def43c7a51af778e686ff420df9c63db4ab522ad&v=4" width=150px height=150px> | <img src="https://avatars0.githubusercontent.com/u/46705510?s=400&v=4" height=150px width=150px/> | <img src="https://avatars0.githubusercontent.com/u/53920397?s=400&u=dcc83643688a3f218fffe1e1ecc4df75e5de7242&v=4" height=150px width=150px/> | <img src="" height=150px width=150px/> |
 
 ## feature flags (for loadtest experiments)
 
-### Enabling caching for top 10 
+### Enabling caching for top 10
 please supply the following arguments to enable caching the top 10 coffee shops
 for each metropolitan area.
 ```
