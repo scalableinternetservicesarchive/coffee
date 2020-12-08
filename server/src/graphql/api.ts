@@ -43,6 +43,7 @@ export const graphqlRoot: Resolvers<Context> = {
     allLikes: () => Like.find(),
 
     getMenuForCafeId: async (_, args, ctx) => {
+      console.log("getMenuForCafeId called")
       // get menu for cafeid
       if (!ctx.user) {
         throw new Error('No user detected.')
@@ -60,6 +61,7 @@ export const graphqlRoot: Resolvers<Context> = {
         .getRawOne()
     },
     getLikedCafes: async (_, args, ctx) => {
+      console.log("getLikedCafes called")
       // get my liked cafes
       if (!ctx.user) {
         throw new Error('No user detected.')
@@ -76,6 +78,7 @@ export const graphqlRoot: Resolvers<Context> = {
         .getRawMany()
     },
     getNearbyCafes: async (_, { lat, long, numResults }) => {
+      console.log("getNearbyCafes called")
       // TODO: possibly implement pagination later if we have time
       const numRes = numResults || 10;
        const res = await getConnection()
@@ -94,6 +97,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
 
     getTopTenCafes: async (_, { lat, long }) => {
+      console.log("getTopTenCafesCalled")
       // fetches the top ten cafes in the nearest metropolitan area of the person.
       // can do experiments here to vary the number of metropolitan areas when not using cache. 
       // default radius: 60mi
@@ -150,6 +154,7 @@ export const graphqlRoot: Resolvers<Context> = {
   },
   Mutation: {
     addLike: async (_, { cafeId }: MutationAddLikeArgs, ctx: Context) => {
+      console.log("addLike called")
       if (!ctx.user) {
         throw new Error('No user detected.')
       }
@@ -180,6 +185,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
 
     addMenu: async (_, {cafeId, item}: MutationAddMenuArgs) =>{
+      console.log("ADDMENU called")
       const c = new Menu()
       //c.id = cafeId
       c.cafeId = cafeId
@@ -201,6 +207,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
 
     getAllCafes: async (_, { cafeId }: MutationGetAllCafesArgs) => {
+      console.log("GetAllCafes called")
       let cafeList: Cafe[] = []
       cafeList = await getConnection()
         .createQueryBuilder()

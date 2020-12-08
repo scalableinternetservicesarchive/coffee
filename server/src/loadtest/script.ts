@@ -87,6 +87,7 @@ export default function (data) {
   myLocation.lat += getRandomCoordDelta()
   myLocation.long += getRandomCoordDelta()
 
+  //console.log("USER", JSON.stringify(user), JSON.stringify(myLocation))
   // First, they visit the site.
   recordRates(http.get('http://localhost:3000/app/index'))
   sleep(Math.random() * 3)
@@ -150,6 +151,7 @@ export default function (data) {
     numResults: 35,
   }, authToken)
 
+  console.log("NBRES BODY", getNearbyCafeRes.body)
   const nearbyCafes = JSON.parse(getNearbyCafeRes.body).data.getNearbyCafes
 
   const getLikedCafesRes = doGqlCall('getLikedCafes', `
@@ -162,7 +164,7 @@ export default function (data) {
   `,
   {}, authToken)
 
-  const newCafeId = JSON.parse(addCafeRes.body).data.addCafe.id
+  const newCafeId = JSON.parse(addCafeRes.body).addCafe.id
 
   const addMenuRes = doGqlCall('addMenu', `
     mutation addMenu($cafeId: Int!, $item: String! {
@@ -178,8 +180,9 @@ export default function (data) {
   }, authToken)
   // get cafe ids that haven't been liked
   const likedCafeIds = JSON.parse(getLikedCafesRes.body).data.getLikedCafes.map((x) => x.id)
-  const cafeIdsToLike = nearbyCafes.filter((c) => !likedCafeIds.includes(c.id)).map((x) => x.id);
+  const cafeIdsToLike = nearbyCafes.filter((c) => !likedCafeIds.includes(c.id));
 
+  console.log("CFID len", cafeIdsToLike.length)
   for (let i = 0; i < Math.min(5, cafeIdsToLike.length); ++i) {
     // view a cafe's menu, and then like a cafe.
     const cafeId = cafeIdsToLike[i];
@@ -246,7 +249,6 @@ function recordRates(res) {
     count300.add(1)
     rate300.add(1)
   } else if (res.status >= 400 && res.status < 500) {
-    console.log(res.body)
     count400.add(1)
     rate400.add(1)
   } else if (res.status >= 500 && res.status < 600) {
