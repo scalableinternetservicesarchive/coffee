@@ -53,7 +53,7 @@ const main = async () => {
 
   const numChunks = metropolitanLocations.length
   for (let chunk_i = 0; chunk_i < numChunks; chunk_i++) {
-    const chunkSize = chunk_i + 1 === numChunks ? Math.ceil(numCafes/numChunks) : Math.floor(numCafes / numChunks)
+    const chunkSize = chunk_i + 1 === numChunks ? Math.floor(numCafes/numChunks) + (numCafes % numChunks) : Math.floor(numCafes / numChunks)
     console.log(`Adding ${chunkSize} cafes to ${metropolitanLocations[chunk_i].name}...`);
     for(let i = 0; i < chunkSize; i++) {
       const latDelta = (0.1) * (Math.random() * 2 - 1);
@@ -87,6 +87,7 @@ const main = async () => {
       lastName: faker.fake("{{name.lastName}}"),
       email: faker.fake("{{internet.email}}"),
     };
+    user.email = `${user.firstName}-${user.lastName}-${user.email}` // to avoid any conflicts
     const hashedPassword = await argon2.hash(user.firstName+ user.lastName);
     user.hashedPassword = hashedPassword
     usersToAdd.push(user);
@@ -103,9 +104,10 @@ const main = async () => {
   console.log(`Adding ${numLikes} likes for each user...`);
   const likesToAdd = [];
   for(let i = 0; i < numUsers; i++) {
+
     const userId = userIdentifiers[i].id;
     let bucket: number[] = [];
-    for (let k = 0; k <= numCafes; k++) {
+    for (let k = 0; k < numCafes; k++) {
         bucket.push(k);
     }
     // sample one without replacement
@@ -115,7 +117,8 @@ const main = async () => {
     }
 
     for(let j = 0; j < numLikes; j++) {
-      const cafeId = cafeIdentifiers[getRandomFromBucket()].id;
+      const l = getRandomFromBucket()
+      const cafeId = cafeIdentifiers[l].id;
       const like = {
         cafeId,
         userId

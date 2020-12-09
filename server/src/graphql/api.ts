@@ -106,7 +106,7 @@ export const graphqlRoot: Resolvers<Context> = {
     },
 
     getTopTenCafes: async (_, { lat, long }) => {
-      console.log("getTopTenCafesCalled")
+      console.log("getTopTenCafes called")
       // fetches the top ten cafes in the nearest metropolitan area of the person.
       // can do experiments here to vary the number of metropolitan areas when not using cache. 
       // default radius: 60mi
@@ -138,9 +138,18 @@ export const graphqlRoot: Resolvers<Context> = {
          `, [lat, long, lat, long])
          return res
       };
-      // first, get the nearest metropolitan location.
-      const nearestMetroArea = getNearestMetroLocation(lat, long)
+      // first, get the nearest metropolitan location (if feature enabled)
+      let nearestMetroArea = {
+        lat,
+        long,
+        slug: ''
+      }
 
+      if (process.env.ENABLE_METRO_AREA ==="yes" || process.env.ENABLE_CACHING_OPTIMIZATION === 'yes') {
+        nearestMetroArea = getNearestMetroLocation(lat, long)
+      }
+
+      
       if (process.env.ENABLE_CACHING_OPTIMIZATION === "yes") {
         const redisKey = 'top-10-' + nearestMetroArea.slug
         const cacheResult = await redis.get(redisKey)

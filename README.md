@@ -7,13 +7,20 @@ The Coffee app is a web-based app that coffee aficionados can use to find specia
 | <img src="https://avatars1.githubusercontent.com/u/17305586?s=400&u=7e843fff18d2e2d1896b01a11241c504dfe03686&v=4" height=150px width=150px/> | <img src="https://avatars2.githubusercontent.com/u/61771011?s=400&u=def43c7a51af778e686ff420df9c63db4ab522ad&v=4" width=150px height=150px> | <img src="https://avatars0.githubusercontent.com/u/46705510?s=400&v=4" height=150px width=150px/> | <img src="https://avatars0.githubusercontent.com/u/53920397?s=400&u=dcc83643688a3f218fffe1e1ecc4df75e5de7242&v=4" height=150px width=150px/> | <img src="" height=150px width=150px/> |
 
 ## feature flags (for loadtest experiments)
+We are using these environment variables to turn on feature flags for optimization. This is used in our load tests.
+
+### Enabling metro area classification for top 10 cafes query
+```sh
+export ENABLE_METRO_AREA=yes
+```
 
 ### Enabling caching for top 10
+
 please supply the following arguments to enable caching the top 10 coffee shops
-for each metropolitan area.
-```
-ENABLE_CACHING_OPTIMIZATION=yes
-REDIS_CACHE_TTL_SECS=15 # seconds for redis key Time-To-Live
+for each metropolitan area. (this implicitly means `ENABLE_METRO_AREA`is set to '`yes`')
+```sh
+export ENABLE_CACHING_OPTIMIZATION=yes
+export REDIS_CACHE_TTL_SECS=15 # seconds for redis key Time-To-Live
 ```
 
 ## Dependencies

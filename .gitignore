@@ -19,3 +19,7 @@ terraform.tfstate.backup
 
 # other
 .DS_Store
+
+# vim
+*.swo
+*.swp

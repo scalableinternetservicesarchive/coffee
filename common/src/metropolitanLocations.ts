@@ -2,16 +2,16 @@
 import { getHaversineDistanceMiles } from './haversine'
 export const metropolitanLocations = [
   {
-    name: "New York City",
-    slug: "new-york-city",
-    lat: 40.7128,
-    long: 74.0060,
-  },
-  {
     name: "Los Angeles",
     slug: "los-angeles",
     lat: 34.0522,
     long: 118.2437,
+  },
+  {
+    name: "New York City",
+    slug: "new-york-city",
+    lat: 40.7128,
+    long: 74.0060,
   },
   {
     name: "Chicago",
@@ -37,6 +37,26 @@ export const metropolitanLocations = [
     lat: 37.7749,
     long: 122.4194,
   },
+  {
+    name: "Phoenix",
+    slug: "phoenix-az",
+    lat: 33.5722,
+    long: 112.0901,
+  },
+  /*
+  {
+    name: "Philadelphia",
+    slug: "philadelphia-pa",
+    lat: 40.0094,
+    long: 75.1333,
+  },
+  {
+    name: "Seattle",
+    slug: "seattle-wa",
+    lat: 47.6205,
+    long: 122.3509,
+  },
+  */
   // NOTE: we can add more here to create more experiments.
 ]
 

@@ -21,9 +21,13 @@ export const options = {
   scenarios: {
     example_scenario: {
       executor: 'constant-vus',
-      //vus: 1000,
-      vus: 10, // temporary testing
-      duration: '30s',
+      //vus: 1,
+      //vus: 10, 
+      //vus: 100, 
+      //vus: 500, 
+      vus: 1000, 
+      //vus: 2500, 
+      duration: '90s',
     },
   },
 }
@@ -246,6 +250,7 @@ const rate200 = new Rate('rate_status_code_2xx')
 const rate300 = new Rate('rate_status_code_3xx')
 const rate400 = new Rate('rate_status_code_4xx')
 const rate500 = new Rate('rate_status_code_5xx')
+const zero_duration_requests = new Counter('zero_duration_requests')
 const routeLevelResponseTimes = {}
 
 const aggResponseTimes = new Trend('agg_response_time')
@@ -258,8 +263,12 @@ function recordRates(res, routeName) {
   if (!routeLevelResponseTimes[routeName]) {
     throw new Error("trend metric for "+routeName+" not registered.")
   }
-  routeLevelResponseTimes[routeName].add(res.timings.duration)
-  aggResponseTimes.add(res.timings.duration)
+  if (res.timings.duration > 0) {
+    routeLevelResponseTimes[routeName].add(res.timings.duration)
+    aggResponseTimes.add(res.timings.duration)
+  } else {
+    zero_duration_requests.add(1)
+  }
   if (res.status >= 200 && res.status < 300) {
     count200.add(1)
 
