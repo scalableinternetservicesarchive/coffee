@@ -1,6 +1,6 @@
 import http from 'k6/http'
 import { sleep } from 'k6'
-import { Counter, Rate } from 'k6/metrics'
+import { Counter, Rate, Trend } from 'k6/metrics'
 import crypto from 'k6/crypto'
 
 // export const options = {
@@ -52,7 +52,7 @@ export function setup () {
  return  {users, metropolitanLocations, probNewUser };
 }
 
-function doHttpCall(endpoint, payloadObj, authToken) {
+function doHttpCall(endpoint, payloadObj, authToken, routeName) {
   const k6Params = {
     headers: {
       'Content-Type': 'application/json',
@@ -66,12 +66,13 @@ function doHttpCall(endpoint, payloadObj, authToken) {
       'http://localhost:3000' + endpoint,
       JSON.stringify(payloadObj),
       k6Params
-    )
+    ),
+    routeName
   )
 }
 
 function doGqlCall(operationName, query, variables={}, authToken) {
-  return doHttpCall('/graphql', { operationName, query, variables }, authToken)
+  return doHttpCall('/graphql', { operationName, query, variables }, authToken, operationName)
 }
 
 function getRandomCoordDelta() {
@@ -88,7 +89,7 @@ export default function (data) {
   myLocation.long += getRandomCoordDelta()
 
   // First, they visit the site.
-  recordRates(http.get('http://localhost:3000/app/index'))
+  recordRates(http.get('http://localhost:3000/app/index'), 'homepage')
   sleep(Math.random() * 3)
 
   let authRes;
@@ -96,14 +97,17 @@ export default function (data) {
     user.email = `${user.firstName}.${user.lastName}-new-email-${crypto.randomBytes(1)[0]}@gmail.com`
     authRes = doHttpCall('/auth/signup',
       {password: user.firstName + user.lastName, firstName: user.firstName, lastName: user.lastName, email: user.email},
+      null,
+      'signup'
     )
     const resBody = JSON.parse(authRes.body)
     user.id = resBody.id
   } else {
-    authRes = doHttpCall('/auth/login', {password: user.firstName + user.lastName, email: user.email})
+    authRes = doHttpCall('/auth/login', {password: user.firstName + user.lastName, email: user.email}, null, 'login')
   }
   // we use this authToken to authenticate further requests
   const authToken = authRes.cookies.authToken[0].value
+  sleep(Math.random() * 2)
 
   const addCafeRes = doGqlCall('addCafe', `
     mutation addCafe($name: String!, $long: Float!, $lat: Float!) {
@@ -118,6 +122,7 @@ export default function (data) {
     lat: myLocation.lat + getRandomCoordDelta(),
   }, authToken)
 
+  sleep(Math.random() * 2)
   const getTopTenCafeRes = doGqlCall('getTopTenCafes', `
     query getTopTenCafes($lat: Float!, $long: Float!) {
       getTopTenCafes(lat: $lat, long: $long){
@@ -134,6 +139,7 @@ export default function (data) {
     lat: myLocation.lat,
   }, authToken)
 
+  sleep(Math.random() * 2)
   const getNearbyCafeRes = doGqlCall('getNearbyCafes', `
     query getNearbyCafes($lat: Float!, $long: Float!, $numResults: Int) {
       getNearbyCafes(lat: $lat, long: $long, numResults: $numResults){
@@ -149,6 +155,7 @@ export default function (data) {
     lat: myLocation.lat,
     numResults: 35,
   }, authToken)
+  sleep(Math.random() * 2)
 
   const nearbyCafes = JSON.parse(getNearbyCafeRes.body).data.getNearbyCafes
 
@@ -177,6 +184,7 @@ export default function (data) {
     item: 'put new menu here'
   }, authToken)
   // get cafe ids that haven't been liked
+  sleep(Math.random() * 2)
   const likedCafeIds = JSON.parse(getLikedCafesRes.body).data.getLikedCafes.map((x) => x.id)
   const cafeIdsToLike = nearbyCafes.filter((c) => !likedCafeIds.includes(c.id)).map((x) => x.id);
 
@@ -205,6 +213,7 @@ export default function (data) {
     `,
     { cafeId },
      authToken)
+    sleep(Math.random() * 2)
   }
   // then, view top 10 cafes
   const getTopTenCafe2Res = doGqlCall('getTopTenCafes', `
@@ -222,8 +231,9 @@ export default function (data) {
     long: myLocation.long,
     lat: myLocation.lat,
   }, authToken)
+  sleep(Math.random() * 4)
   // finally log out.
-  doHttpCall('/auth/logout', {}, authToken)
+  doHttpCall('/auth/logout', {}, authToken, 'logout')
 }
 
 
@@ -236,22 +246,50 @@ const rate200 = new Rate('rate_status_code_2xx')
 const rate300 = new Rate('rate_status_code_3xx')
 const rate400 = new Rate('rate_status_code_4xx')
 const rate500 = new Rate('rate_status_code_5xx')
+const routeLevelResponseTimes = {}
 
-function recordRates(res) {
+const aggResponseTimes = new Trend('agg_response_time')
+const routes = ['homepage', 'signup', 'login', 'logout', 'addCafe', 'getTopTenCafes', 'getNearbyCafes', 'getLikedCafes', 'addMenu', 'getMenuForCafeId', 'addLike']
+routes.forEach((routeName) => {
+  routeLevelResponseTimes[routeName] = new Trend(`route-${routeName}`)
+})
+
+function recordRates(res, routeName) {
+  if (!routeLevelResponseTimes[routeName]) {
+    throw new Error("trend metric for "+routeName+" not registered.")
+  }
+  routeLevelResponseTimes[routeName].add(res.timings.duration)
+  aggResponseTimes.add(res.timings.duration)
   if (res.status >= 200 && res.status < 300) {
     count200.add(1)
+
     rate200.add(1)
+    rate500.add(0)
+    rate300.add(0)
+    rate400.add(0)
   } else if (res.status >= 300 && res.status < 400) {
     console.log(res.body)
     count300.add(1)
+
     rate300.add(1)
+    rate200.add(0)
+    rate400.add(0)
+    rate500.add(0)
   } else if (res.status >= 400 && res.status < 500) {
     console.log(res.body)
     count400.add(1)
+
     rate400.add(1)
+    rate200.add(0)
+    rate300.add(0)
+    rate500.add(0)
   } else if (res.status >= 500 && res.status < 600) {
     count500.add(1)
+
     rate500.add(1)
+    rate200.add(0)
+    rate300.add(0)
+    rate400.add(0)
   }
   return res
 }
