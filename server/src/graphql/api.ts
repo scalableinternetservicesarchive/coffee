@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
 import { redis } from '../db/redis'
 import path from 'path'
@@ -6,7 +5,9 @@ import { getConnection } from 'typeorm'
 import { Cafe } from '../entities/Cafe'
 import { Like } from '../entities/Like'
 import { Menu } from '../entities/Menu'
-import { getNearestMetroLocation } from '../../../common/src/metropolitanLocations'
+import { metropolitanLocations, getNearestMetroLocation } from '../../../common/src/metropolitanLocations'
+import deepEqual from 'deep-equal'
+import {readFileSync, writeFileSync, existsSync } from 'fs'
 import { User } from '../entities/User'
 import {
   MutationAddCafeArgs,
@@ -34,6 +35,14 @@ interface Context {
   pubsub: PubSub
 }
 const redisTtlSecs = parseInt(process.env.REDIS_CACHE_TTL_SECS || '30') || 30
+
+const metropolitanJsonPath = __dirname + '/../../../../src/loadtest/metropolitanLocations.json'
+
+if (!existsSync(metropolitanJsonPath) || !deepEqual(JSON.parse(readFileSync(metropolitanJsonPath, { encoding: 'utf8'})), metropolitanLocations)) {
+  // create new one
+  writeFileSync(metropolitanJsonPath, JSON.stringify(metropolitanLocations));
+  console.log("Updated src/loadtest/metropolitanLocations.json")
+}
 
 export const graphqlRoot: Resolvers<Context> = {
   Query: {
