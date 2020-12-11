@@ -1,4 +1,4 @@
-/* 
+/*
  * this script initializes the database with dummy data in the following tables:
  *  - Cafe (specified by NUM_CAFE env var, default = 25)
  *  - User (specifeid NUM_USER env var, default = 100)
@@ -15,14 +15,15 @@
  */
 
 
-import { initORM } from './sql';
-import * as faker from 'faker';
 import * as argon2 from 'argon2';
+import * as faker from 'faker';
+import { writeFileSync } from 'fs';
+import { metropolitanLocations } from '../../../common/src/metropolitanLocations';
 import { Cafe } from '../entities/Cafe';
-import { User } from '../entities/User';
-import { metropolitanLocations } from '../../../common/src/metropolitanLocations'
 import { Like } from '../entities/Like';
-import { writeFileSync } from 'fs'
+import { Menu } from '../entities/Menu';
+import { User } from '../entities/User';
+import { initORM } from './sql';
 
 const main = async () => {
   const dbConnection = await initORM();
@@ -46,6 +47,7 @@ const main = async () => {
     await dbConnection.query(`DELETE FROM \`like\` WHERE 1=1;`)
     await dbConnection.query(`DELETE FROM \`cafe\` WHERE 1=1;`)
     await dbConnection.query(`DELETE FROM \`user\` WHERE 1=1;`)
+    await dbConnection.query(`DELETE FROM \`menu\` WHERE 1=1;`)
   }
 
   const cafesToAdd = [];
@@ -131,9 +133,38 @@ const main = async () => {
     .createQueryBuilder()
     .insert()
     .into(Like)
-    .values(likesToAdd) 
+    .values(likesToAdd)
     .execute();
   console.log("DONE");
+
+  console.log(`Adding menus to the database`);
+  const menusToAdd = [];
+  for (let i = 0; i< numCafes;i++)
+  {
+    const cafeId = cafeIdentifiers[i].id;
+    //var numMenu = numCafes;
+    //var menuDescription = 'sample menu, this is the sample menu'
+    var menuDescription = faker.fake("{{lorem.words}}");
+    var MenuId = i + 1;
+    const Menu = {
+        MenuId,
+        cafeId,
+        menuDescription
+    }
+    menusToAdd.push(Menu);
+
+
+
+  }
+  await dbConnection
+    .createQueryBuilder()
+    .insert()
+    .into(Menu)
+    .values(menusToAdd)
+    .execute();
+  console.log("DONE");
+
+
   console.log("Updating loadtest users.json file...")
   const users = await dbConnection
     .query('SELECT id, firstName, lastName, email FROM user')
