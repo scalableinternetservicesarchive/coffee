@@ -49,6 +49,7 @@ export function App() {
 export function AppBody() {
   return (
     <>
+    <title> Coffee! </title>
       <Router className={bodyClass}>
         <Redirect noThrow from="app" to="index" />
         <Redirect noThrow from="app/playground" to="surveys" />

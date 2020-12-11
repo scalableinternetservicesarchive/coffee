@@ -23,6 +23,15 @@ export ENABLE_CACHING_OPTIMIZATION=yes
 export REDIS_CACHE_TTL_SECS=15 # seconds for redis key Time-To-Live
 ```
 
+## Enabling google maps API KEY
+This is optional, although not doing it will result in a poor map picture (though still readable).
+Supply the google maps API key by the environment variable:
+
+```sh
+export GMAPS_API_KEY="YOUR_API_KEY_HERE"
+```
+
+
 ## Dependencies
 
 For the [Quickstart](https://github.com/rothfels/coffee#Quickstart), you will need:
