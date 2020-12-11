@@ -1,13 +1,13 @@
+import deepEqual from 'deep-equal'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { PubSub } from 'graphql-yoga'
-import { redis } from '../db/redis'
 import path from 'path'
 import { getConnection } from 'typeorm'
+import { getNearestMetroLocation, metropolitanLocations } from '../../../common/src/metropolitanLocations'
+import { redis } from '../db/redis'
 import { Cafe } from '../entities/Cafe'
 import { Like } from '../entities/Like'
 import { Menu } from '../entities/Menu'
-import { metropolitanLocations, getNearestMetroLocation } from '../../../common/src/metropolitanLocations'
-import deepEqual from 'deep-equal'
-import {readFileSync, writeFileSync, existsSync } from 'fs'
 import { User } from '../entities/User'
 import {
   MutationAddCafeArgs,
@@ -50,6 +50,7 @@ export const graphqlRoot: Resolvers<Context> = {
     cafes: () => Cafe.find(),
     likes: (_, { userId }) => Like.find({ where: { user: { id: userId } } }),
     allLikes: () => Like.find(),
+    menus: () =>Menu.find(),
 
     getMenuForCafeId: async (_, args, ctx) => {
       console.log("getMenuForCafeId called")
@@ -69,6 +70,8 @@ export const graphqlRoot: Resolvers<Context> = {
         .where('menu.cafeId = :cafeId', { cafeId: args.cafeId })
         .getRawOne()
     },
+
+
     getLikedCafes: async (_, args, ctx) => {
       console.log("getLikedCafes called")
       // get my liked cafes
@@ -108,10 +111,10 @@ export const graphqlRoot: Resolvers<Context> = {
     getTopTenCafes: async (_, { lat, long }) => {
       console.log("getTopTenCafes called")
       // fetches the top ten cafes in the nearest metropolitan area of the person.
-      // can do experiments here to vary the number of metropolitan areas when not using cache. 
+      // can do experiments here to vary the number of metropolitan areas when not using cache.
       // default radius: 60mi
       const fetchTopTenCafes = async (lat: number, long: number) => {
-        // we use the haversine formula, as shown in 
+        // we use the haversine formula, as shown in
         // https://www.plumislandmedia.net/mysql/stored-function-haversine-distance-computation/
         // the haversine function haversineMiles is defined in the db migration sql files
          const res = await getConnection()
@@ -149,7 +152,7 @@ export const graphqlRoot: Resolvers<Context> = {
         nearestMetroArea = getNearestMetroLocation(lat, long)
       }
 
-      
+
       if (process.env.ENABLE_CACHING_OPTIMIZATION === "yes") {
         const redisKey = 'top-10-' + nearestMetroArea.slug
         const cacheResult = await redis.get(redisKey)

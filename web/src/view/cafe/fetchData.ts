@@ -18,6 +18,24 @@ export const fetchCafes = gql`
   ${fragmentCafe}
 `
 
+export const fragmentMenu = gql`
+  fragment Menu on Menu {
+    id
+    cafeId
+    menuDescription
+  }
+`
+export const fetchMenus = gql`
+  query FetchMenus {
+    menus {
+      ...Menu
+    }
+  }
+  ${fragmentMenu}
+`
+
+
+
 export const fetchLikes = gql`
   query FetchLikes($userId: Int!) {
     likes(userId: $userId) {
@@ -38,7 +56,7 @@ export const fetchLikedCafes = gql`
       longitude
     }
   }
-  
+
 `
 
 export const fetchNearbyCafes= gql`

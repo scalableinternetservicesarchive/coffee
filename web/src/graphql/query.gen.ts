@@ -45,6 +45,26 @@ export interface FetchCafes {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: FetchMenus
+// ====================================================
+
+export interface FetchMenus_menus {
+  __typename: "Menu";
+  id: number;
+  cafeId: number;
+  menuDescription: string;
+}
+
+export interface FetchMenus {
+  menus: FetchMenus_menus[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: FetchLikes
 // ====================================================
 
@@ -405,6 +425,22 @@ export interface Cafe {
   name: string;
   longitude: number;
   latitude: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: Menu
+// ====================================================
+
+export interface Menu {
+  __typename: "Menu";
+  id: number;
+  cafeId: number;
+  menuDescription: string;
 }
 
 /* tslint:disable */

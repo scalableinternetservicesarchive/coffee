@@ -9,6 +9,7 @@ import { BodyText } from '../../style/text'
 import { CafeCreator } from '../cafe/CafeCreator'
 import { CafeList } from '../cafe/CafeList'
 import { LikedCafes } from '../cafe/LikedCafes'
+import { MenuList } from '../cafe/MenuList'
 import { TopTenCafes } from '../cafe/TopTenCafes'
 import { AppRouteParams } from '../nav/route'
 import { Page } from './Page'
@@ -22,7 +23,7 @@ export function HomePage(props: HomePageProps) {
       <Hero>
         <H1>COFFEE</H1>
         <H3>Discover specialty cafes around the world</H3>
-        <H3> Available in {metropolitanLocations.map((x)=>x.name).join(', ')}!</H3>
+        <H3> Available in {metropolitanLocations.map(x => x.name).join(', ')}!</H3>
       </Hero>
       <Content style={{ width: '900px' }}>
         <LContent>
@@ -67,15 +68,15 @@ export function HomePage(props: HomePageProps) {
           <Section>
             <H2> Your Liked Cafes </H2>
             <Spacer $h4 />
-            <LikedCafes/>
+            <LikedCafes />
           </Section>
           <Section>
-            <TopTenCafes/>
+            <TopTenCafes />
           </Section>
           <Section>
-            <H2>Recent Activity</H2>
+            <H2>Menus for all cafes</H2>
             <Spacer $h4 />
-            <BodyText>coming soon</BodyText>
+            <MenuList />
           </Section>
         </RContent>
       </Content>
