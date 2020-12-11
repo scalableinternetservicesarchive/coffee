@@ -3,7 +3,7 @@ import * as React from 'react'
 //import { getAllCafes } from './mutateData'
 import { FetchMenus } from '../../graphql/query.gen'
 import { Button } from '../../style/button'
-import { H1, H2 } from '../../style/header'
+import { H1, H3 } from '../../style/header'
 import { Spacer } from '../../style/spacer'
 import { BodyText } from '../../style/text'
 import { fetchMenus } from './fetchData'
@@ -13,9 +13,9 @@ export function MenuList() {
 
   return (
     <div>
-      <H1>All Cafes</H1>
+      <H1>All Menus</H1>
       <Spacer $h4 />
-      <Button onClick={() => setShowStuff(!showStuff)}>Show / Hide Cafes</Button>
+      <Button onClick={() => setShowStuff(!showStuff)}>Show / Hide Menus</Button>
       <Spacer $h4 />
       {showStuff && <FetchStuff />}
     </div>
@@ -36,19 +36,19 @@ function FetchStuff() {
   */
 
   if (loading) {
-    return <div>loading...</div>
+    return <div>Loading...</div>
   }
   if (!data || data.menus.length === 0) {
     if (!data) {
       console.log('null ptr')
     }
-    return <div>no Menues data</div>
+    return <div>No Menus</div>
   }
   return (
     <div>
       {data.menus.map((s, i) => (
         <div key={i} style={{ margin: '10px 0' }}>
-          <H2>{s.id}</H2>
+          <H3>{s.id}</H3>
           <BodyText>Menu is: {s.menuDescription}</BodyText>
         </div>
       ))}
